@@ -1,4 +1,7 @@
 # TCC
+
+Este projeto é uma continuação do trabalho originalmente desenvolvido por Otávio Migliavacca Madalosso.
+
 Trabalho de Conclusao de Curso
 Requisitos:
 
