@@ -1,3 +1,4 @@
+
 .glyphicon-refresh-animate {
     -animation: spin .7s infinite linear;
     -webkit-animation: spin2 .7s infinite linear;
@@ -11,4 +12,13 @@
 @keyframes spin {
     from { transform: scale(1) rotate(0deg);}
     to { transform: scale(1) rotate(360deg);}
+}
+
+#hlpAlg{
+	display: none;
+}
+
+#showDesc{
+	padding: 0px 0px 10px 0px;
+	float: right;
 }
