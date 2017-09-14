@@ -2,31 +2,35 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.conf.urls.static import static
 from django.conf import settings
-import regbackend
-
+import webapp.regbackend as regbackend
+import experiment.views as views
 
 urlpatterns = [
     # urls experiment
-    url(r'^$', 'experiment.views.home', name='home'),
-    url(r'^about/$', 'experiment.views.about', name='about'),
-    url(r'^contact/$', 'experiment.views.contact', name='contact'),
+    url(r'^$', views.home, name='home'),
+    url(r'^about/$', views.about, name='about'),
+    url(r'^contact/$', views.contact, name='contact'),
     url(r'^experiments/checkForm$',
-        'experiment.views.checkForm', name='checkForm'),
-    url(r'^experiments/$', 'experiment.views.experiments', name='exp'),
-    url(r'^experiments/remove$', 'experiment.views.experimentsRemove', name='expRemove'),
-    url(r'^experiments/downloadInputFile', 'experiment.views.downloadInputFile',
+        views.checkForm , name='checkForm'),
+    url(r'^experiments/$', views.experiments, name='exp'),
+    url(r'^experiments/remove$', views.experimentsRemove, name='expRemove'),
+    url(r'^experiments/downloadInputFile', views.downloadInputFile,
         name='downloadInputFile'),
-    url(r'^experiments/downloadOutputFile', 'experiment.views.downloadOutputFile',
+    url(r'^experiments/downloadOutputFile', views.downloadOutputFile,
         name='downloadOutputFile'),
 
     #django admin
-    url(r'^experiments/result$', 'experiment.views.result', name='result'),
+    url(r'^experiments/result$', views.result, name='result'),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^statistics', views.appStatistics, name='appStatistics'),
 
     # urls register
     url(r'^accounts/register/', regbackend.MyRegistrationView.as_view(),
         name='register_custom'),
+    url(r'^complete/', views.register_sucess, name='complete'),
     url(r'^accounts/', include('registration.backends.default.urls')),
+    url(r'^profile/(?P<username>[a-zA-Z0-9]+)$', views.getUserProfile, name="userProfile"),
+    url(r'^profile/(?P<username>[a-zA-Z0-9]+)/change', views.changeNotifications, name="changeNotifications"),
 ]
 
 if settings.DEBUG:
