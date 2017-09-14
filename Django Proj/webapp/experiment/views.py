@@ -143,6 +143,7 @@ def contact(request):
                   from_email,
                   [to_email],
                   fail_silently=False)
+        return HttpResponseRedirect(reverse('contact'))
     context = {
         "form": form,
     }
