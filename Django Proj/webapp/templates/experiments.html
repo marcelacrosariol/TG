@@ -22,14 +22,26 @@
 					<input id='execute' class='btn btn-primary' type="submit" value="Executar"> 
 				</form>
 				<div id="hlpAlg">
-							<ul>
-							{% for key,value in form.hlp.items %}
-								<li>
-								<strong>{{key}}:</strong> {{value}}
-								</li>
-							{% endfor %}
-							</ul>
-						</div>
+					<table>
+  						<tr>
+    						<th>Algoritmo</th>
+    						<th>Descrição</th>
+    						<th>Exemplo de entrada</th>
+  						</tr>
+  						{% for key,value in form.hlp.items %}
+						<tr>
+							<td>{{key}}</td>
+							{% for item in value %}
+    							{% if 'sample' in item %}
+    							<td><a href="{% url 'sampleDownload' key%}"> Download </a></td>
+    							{% else %}
+    							<td>{{item}}</td>
+    							{% endif %}
+    						{% endfor %}
+  						</tr>
+  						{% endfor %}
+					</table>
+				</div>
 		  	</div>
 		  	<div id="colForm" class="col-sm-3 col-md-3"></div>
 		</div>

@@ -10,8 +10,7 @@ class AppUserForm(RegistrationFormUniqueEmail):
 class ExecutionForm(forms.Form):
     hlp = {}
     for item in Algorithm.objects.all():
-      hlp[item.nameAlg] = item.desc 
-
+      hlp[item.nameAlg] = [item.desc,str(item.sample)]
 
     Algoritmo = forms.ModelChoiceField(queryset=Algorithm.objects.all(),
                                        empty_label="---Selecione um algoritmo---",

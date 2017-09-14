@@ -18,7 +18,14 @@
 	display: none;
 }
 
+#hlpAlg table, th, td{
+	padding: 8px;
+	margin: 10px;
+	border: 1px solid black;
+}
+
 #showDesc{
 	padding: 0px 0px 10px 0px;
 	float: right;
 }
+

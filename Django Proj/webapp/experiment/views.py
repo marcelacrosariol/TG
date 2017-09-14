@@ -20,6 +20,7 @@ from django.contrib import messages
 from experiment.paginator import paginate
 
 from experiment.tasks import RunExperiment
+import os
 
 def about(request):
     return HttpResponse(1)
@@ -88,6 +89,7 @@ def changeNotifications(request, username):
 
     return HttpResponseRedirect(reverse('userProfile', kwargs={'username':username}))
 
+
 def downloadInputFile(request):
     expId = request.GET.get('id')
     execution = Execution.objects.get(pk=expId)
@@ -113,12 +115,18 @@ def downloadOutputFile(request):
         print ("Autorizado")
         response = HttpResponse(
             execution.outputFile, content_type='application/force-download')
-        response[
-            'Content-Disposition'] = 'attachment; filename="Resultado-Experimento-' + str(expId) + '"'
+        response['Content-Disposition'] = 'attachment; filename="Resultado-Experimento-' + str(expId) + '"'
         return response
     print ("Nao autorizado")
     # criar alerta
     return HttpResponseRedirect(reverse('home'))
+
+def downloadSample(request, path):
+    file = Algorithm.objects.get(nameAlg=path).sample
+    file_path = os.path.join(settings.MEDIA_ROOT, path)
+    response = HttpResponse(file, content_type='application/force-download')
+    response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
+    return response
 
 
 def contact(request):
@@ -236,8 +244,8 @@ def experimentsRemove(request):
     return HttpResponseRedirect(reverse('home'))
 
 def appStatistics(request):
-    context = {}
-    return render(request, "statistics.html", context)
+	context = {}
+	return render(request, "statistics.html", context)
 
 @csrf_exempt
 def result(request):
