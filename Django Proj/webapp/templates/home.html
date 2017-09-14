@@ -1,6 +1,6 @@
 {%extends "base.html" %}
 {% load crispy_forms_tags %}
-{% load staticfiles %}
+{% load static %}
 {% block head_title%}{{title}}{%endblock%}
 
 {%block content%}
@@ -84,7 +84,7 @@
 
           {% for page, value in pagesIndex.items %}
               {% if value > 0 %}
-                {% if page = 2 %}
+                {% if page == 2 %}
                 <li class='active'><a href="#">{{value}}</a></li>
                 {%else%}
                 <li><a href="?page={{value}}">{{value}}</a></li>

@@ -20,14 +20,26 @@
           </ul>
 
           <ul class="nav navbar-nav navbar-right">
-          {% if request.user.is_authenticated %}
-            <li><a>{{user}}</a></li>
-            
 
-            <li><a href="{% url 'auth_logout' %}">Sair</a></li>
-          {%else%}
+            {% if request.user.is_authenticated %}
+            <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown">
+               {{user}}  <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'userProfile' user %}">Perfil</a></li>
+                {% if request.user.is_superuser %}
+                <li><a class="dropdown-item" href="{% url 'appStatistics' %}">Estatísticas</a></li>
+                <li><a class="dropdown-item" href="/admin">Administrar</a></li> 
+                {% endif %}
+              </ul>
+            </li>
+            <li>
+              <a href="{% url 'auth_logout' %}">Sair</a>
+            </li>
+            {%else%}
             <li class="active"><a href="{% url 'registration_register' %}">Registrar</a></li>
-          {%endif%}
+            {%endif%}
           </ul>
 
           {% if not request.user.is_authenticated and not "/accounts/login" in request.get_full_path %}
