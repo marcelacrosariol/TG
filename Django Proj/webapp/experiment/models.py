@@ -1,18 +1,20 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
 
-class Algorithms(models.Model):
+class Algorithm(models.Model):
     idAlg = models.AutoField(primary_key=True)
     nameAlg = models.CharField(null=False, blank=False, max_length=100)
     desc = models.CharField(null=True, blank=False, max_length=500)
     command = models.CharField(null=False, blank=False, max_length=100)
+    sample = models.FileField(upload_to="samples/", null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nameAlg
 
 
-class UsuarioFriends(models.Model):
+class AppUser(models.Model):
     nickname = models.CharField(
         default='default', max_length=30, blank=False, null=True)
     company = models.CharField(
@@ -21,8 +23,9 @@ class UsuarioFriends(models.Model):
     date_register = models.DateTimeField('date_register', auto_now_add=True)
     last_access = models.DateTimeField('last_access', auto_now=True)
     resultsPerPage = models.IntegerField(default=10)
+    notification = models.CharField(default="yes", max_length=4, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nickname
 
 
@@ -35,14 +38,14 @@ def user_directory_path_out(instance, filename):
 
 
 class Execution(models.Model):
-    request_by = models.ForeignKey(UsuarioFriends)
+    request_by = models.ForeignKey(AppUser)
     date_requisition = models.DateTimeField(
         'date_requisition', auto_now_add=True)
     status = models.IntegerField(default=1)
-    algorithm = models.ForeignKey(Algorithms, null=True, blank=False)
+    algorithm = models.ForeignKey(Algorithm, null=True, blank=False)
     inputFile = models.FileField(upload_to=user_directory_path_in, null=True)
     outputFile = models.FileField(upload_to=user_directory_path_out, null=True)
     time = models.FloatField(default=-1)
 
-    def __unicode__(self):
-        return self.request_by.id  # arrumar
+    def __int__(self):
+        return self.request_by.id  
