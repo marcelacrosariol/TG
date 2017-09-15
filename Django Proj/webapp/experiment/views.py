@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.template import RequestContext
@@ -12,6 +13,8 @@ from django.core.urlresolvers import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # from django.core.files import File
 # jsonview - Crispy validation
+
+import json
 from jsonview.decorators import json_view
 from crispy_forms.utils import render_crispy_form
 from crispy_forms.helper import FormHelper
@@ -21,6 +24,7 @@ from experiment.paginator import paginate
 
 from experiment.tasks import RunExperiment
 import os
+from random import randint
 
 def about(request):
     return HttpResponse(1)
@@ -29,7 +33,7 @@ def home(request):
     if not request.user.is_authenticated():
         title = "Welcome"
         context = {
-            "title": title
+            'title': title
         }
         return render(request, "welcome.html", context)
     else:
@@ -63,9 +67,9 @@ def home(request):
             data = executions
         pageI = paginate(page, paginator)
         context = {
-            "title": title,
-            "data": data,
-            "pagesIndex": pageI,
+            'title': title,
+            'data': data,
+            'pagesIndex': pageI,
         }
         return render(request, "home.html", context)
 
@@ -145,7 +149,7 @@ def contact(request):
                   fail_silently=False)
         return HttpResponseRedirect(reverse('contact'))
     context = {
-        "form": form,
+        'form': form,
     }
     return render(request, "contact.html", context)
 
@@ -180,7 +184,7 @@ def experiments(request):
             title = "Experiments %s" % (request.user)
             # form_html = render_crispy_form(form)
             context = {
-                "form": form,
+                'form': form,
                 'title': title,
             }
             return render(request, "experiments.html", context)
@@ -229,8 +233,8 @@ def experiments(request):
     form = ExecutionForm(request.POST or None)
     title = "Experiments %s" % (request.user)
     context = {
-        "title": title,
-        "form": form,
+        'title': title,
+        'form': form,
     }
     return render(request, "experiments.html", context)
 
@@ -245,8 +249,24 @@ def experimentsRemove(request):
     return HttpResponseRedirect(reverse('home'))
 
 def appStatistics(request):
-	context = {}
-	return render(request, "statistics.html", context)
+    #Dataset
+    items = {}
+    #For each algorithm in the database
+    for algorithm in Algorithm.objects.all():
+        
+        data = []
+        label = algorithm.nameAlg
+        
+        for month in range(12):
+            qtd = Execution.objects.filter(algorithm=algorithm.pk,date_requisition__month=month+1).count()
+            data.append(qtd)
+        
+        items[algorithm.nameAlg] = data 
+
+
+    #to_json = json.dumps(items)
+
+    return render(request, "statistics.html", {'dataset': json.dumps(items)})
 
 @csrf_exempt
 def result(request):

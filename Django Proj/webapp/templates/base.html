@@ -10,12 +10,14 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>{% block head_title%}{%endblock%}</title>
+    {% block js %} {% endblock %}
+
+    <title>{% block title%}{%endblock%}</title>
     {%include 'head_css.html'%}
 
   </head>
 
-  <body>
+  <body >
     {% include 'navbar.html' %}
 
     <div class="container">

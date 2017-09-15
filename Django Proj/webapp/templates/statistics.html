@@ -1,5 +1,15 @@
 {%extends "base.html" %}
 
+{% block title %} Estatisticas {% endblock %}
+
+{% block js %}
+	<script type='text/javascript'>
+	var dt = JSON.parse('{{ dataset | safe }}');
+	</script>
+{% endblock %}
+
 {% block content %}
-Aqui ficará as estatísticas do web app
-{%endblock%}
+
+<canvas id="appChart" ></canvas>
+
+{% endblock %}
