@@ -28,18 +28,18 @@
     						<th>Descrição</th>
     						<th>Exemplo de entrada</th>
   						</tr>
-  						{% for key,value in form.hlp.items %}
+  						{% for key, value in help.items %}
 						<tr>
-							<td>{{key}}</td>
+							<td>{{key}}</td> 
 							{% for item in value %}
-    							{% if 'sample' in item %}
+								{% if 'sample' in item %}
     							<td><a href="{% url 'sampleDownload' key%}"> Download </a></td>
     							{% else %}
     							<td>{{item}}</td>
     							{% endif %}
     						{% endfor %}
   						</tr>
-  						{% endfor %}
+  						{% endfor %} 
 					</table>
 				</div>
 		  	</div>

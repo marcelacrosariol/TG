@@ -1,4 +1,6 @@
 {%extends "base.html" %}
+{% load crispy_forms_tags %}
+{% crispy form %}
 
 {% block title %} Estatisticas {% endblock %}
 
@@ -10,6 +12,15 @@
 
 {% block content %}
 
-<canvas id="appChart" ></canvas>
+<div class= 'col-lg-2 col-sm-12'>
+      <form method="POST" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{form|crispy}} 
+            <button type="submit" class="btn btn-default btn-sm">Alterar</button>
+      </form>
+</div>
 
+<div class='col-lg-11 col-sm-12'>
+      <canvas id="appChart"></canvas>
+</div>
 {% endblock %}

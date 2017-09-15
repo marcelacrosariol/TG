@@ -5,7 +5,7 @@ from django.template import RequestContext
 from django.conf import settings
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
-from experiment.forms import ExecutionForm, ContactForm
+from experiment.forms import *
 from experiment.models import Execution, Algorithm, AppUser
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
@@ -79,18 +79,26 @@ def about(request):
 
 def getUserProfile(request, username):
     user = User.objects.get(username=username)
-    userFriend = AppUser.objects.get(usuario=user.id)
-    return render(request, 'user_profile.html', {"user":user, "userFriend":userFriend})    
+    appUser = AppUser.objects.get(usuario=user.id)
+
+    form = NotificationForm(request.POST or None)
+
+    context = {
+        'form': form, 
+        'user': user, 
+        'appUser': appUser
+    }
+
+    return render(request, 'user_profile.html', context)    
 
 def changeNotifications(request, username):
     choice = request.POST.get("choice")
 
     user = User.objects.get(username=username)
-    userFriend = AppUser.objects.get(usuario=user.id)
+    appUser = AppUser.objects.get(usuario=user.id)
 
-    userFriend.notification = choice
-    userFriend.save()
-
+    appUser.notification = choice
+    appUser.save()
     return HttpResponseRedirect(reverse('userProfile', kwargs={'username':username}))
 
 
@@ -161,6 +169,7 @@ def checkForm(request):
     form = ExecutionForm(request.POST or None)  # request POST?
     print(request.POST)
     print ("\n\n")
+
     if form.is_valid():  # processa
         experiments(request)
         helper = FormHelper()
@@ -232,9 +241,17 @@ def experiments(request):
         # return render(request, "experiments.html", cont)
     form = ExecutionForm(request.POST or None)
     title = "Experiments %s" % (request.user)
+
+    hlp = {}
+    for item in Algorithm.objects.all():
+      hlp[item.nameAlg] = [item.desc,str(item.sample)]
+
+    print (hlp)
+
     context = {
         'title': title,
         'form': form,
+        'help': hlp
     }
     return render(request, "experiments.html", context)
 
@@ -249,6 +266,13 @@ def experimentsRemove(request):
     return HttpResponseRedirect(reverse('home'))
 
 def appStatistics(request):
+    form = YearChartForm(request.POST or None)
+    if request.method == 'POST':
+        year = request.POST.get('year')
+    else: 
+        year = '2017' 
+    print(year)
+    
     #Dataset
     items = {}
     #For each algorithm in the database
@@ -258,7 +282,7 @@ def appStatistics(request):
         label = algorithm.nameAlg
         
         for month in range(12):
-            qtd = Execution.objects.filter(algorithm=algorithm.pk,date_requisition__month=month+1).count()
+            qtd = Execution.objects.filter(algorithm=algorithm.pk,date_requisition__month=month+1, date_requisition__year=year).count()
             data.append(qtd)
         
         items[algorithm.nameAlg] = data 
@@ -266,7 +290,7 @@ def appStatistics(request):
 
     #to_json = json.dumps(items)
 
-    return render(request, "statistics.html", {'dataset': json.dumps(items)})
+    return render(request, "statistics.html", {'form':form, 'dataset': json.dumps(items)})
 
 @csrf_exempt
 def result(request):
@@ -284,14 +308,14 @@ def result(request):
             execution.time = tempo
             execution.save()
 
-            userFriend = execution.request_by
-            userEmail = userFriend.usuario.email
+            appUser = execution.request_by
+            userEmail = appUser.usuario.email
 
-            if (userFriend.notification == 'yes'): 
+            if (appUser.notification == 'yes'): 
                 subject = 'Portal Friends - Experimento concluido com sucesso' 
                 from_email = settings.EMAIL_HOST_USER  
                 to_email = userEmail
-                message = "Olá " + userFriend.nickname + " experiencia " + idExec + " foi concluida com sucesso"
+                message = "Olá " + appUser.nickname + " experiencia " + idExec + " foi concluida com sucesso"
                 send_mail(subject, message,from_email,[to_email], fail_silently=False)
 
     return HttpResponse(1)
