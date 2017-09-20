@@ -18,6 +18,8 @@ urlpatterns = [
         name='downloadInputFile'),
     url(r'^experiments/downloadOutputFile', views.downloadOutputFile,
         name='downloadOutputFile'),
+    url(r'^experiment/sample/(?P<path>[a-zA-Z0-9]+)', views.downloadSample,
+        name='sampleDownload'),
 
     #django admin
     url(r'^experiments/result$', views.result, name='result'),
