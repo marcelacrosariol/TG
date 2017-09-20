@@ -20,8 +20,8 @@ class AppUser(models.Model):
     company = models.CharField(
         default='default', max_length=50, blank=False, null=True)
     usuario = models.OneToOneField(User)
-    date_register = models.DateTimeField('date_register', auto_now_add=True)
-    last_access = models.DateTimeField('last_access', auto_now=True)
+    date_register = models.DateField('date_register', auto_now_add=True)
+    last_access = models.DateField('last_access', auto_now=True)
     resultsPerPage = models.IntegerField(default=10)
     notification = models.CharField(default="yes", max_length=4, blank=True)
 
@@ -39,8 +39,7 @@ def user_directory_path_out(instance, filename):
 
 class Execution(models.Model):
     request_by = models.ForeignKey(AppUser)
-    date_requisition = models.DateTimeField(
-        'date_requisition', auto_now_add=True)
+    date_requisition = models.DateField('date_requisition', auto_now_add=True)
     status = models.IntegerField(default=1)
     algorithm = models.ForeignKey(Algorithm, null=True, blank=False)
     inputFile = models.FileField(upload_to=user_directory_path_in, null=True)
