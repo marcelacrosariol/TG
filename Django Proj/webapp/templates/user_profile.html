@@ -16,7 +16,7 @@
         </thead>
         <tbody>
         <tr>
-          <td>Usuario</td>
+          <td>Usuário</td>
           <td>{{user.username}}</td>
         </tr>
         <tr>
@@ -33,24 +33,24 @@
         </tr>
         <tr>
           <td>Notificação por email</td>
-          <td>{{appUser.notification}}</td>
+          {% if appUser.notification == 'yes' %}
+          <td>Sim</td>
+          {% else %}
+          <td>Não</td>
+          {% endif %}
+        </tr>
+        <tr>
+          <td>Senha</td>
+          <td><a href="{% url 'auth_password_change' %}" class="btn btn-default btn-sm">Alterar senha</a></td>
         </tr>
         </tbody>
     </table>
-
+    
     <form method="POST" action="{% url 'changeNotifications' request.user %}" enctype="multipart/form-data">
       {% csrf_token %}
       {{form.choice | as_crispy_field}} 
       <input type="submit" class="btn btn-default btn-sm" value="Alterar">
     </form>
-
-    {% if messages %}
-    <ul class="messages">
-    {% for message in messages %}
-    <li class="{{ message.tags }}">{{ message }}</li>
-    {% endfor %}
-    </ul>
-    {% endif %}
 
   </div>
 </div>

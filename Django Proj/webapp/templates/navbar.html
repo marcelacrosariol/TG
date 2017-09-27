@@ -49,8 +49,11 @@
             </div>
             <div class="form-group">
               <input type='password' class='form-control' name='password' placeholder='Password'>
+
+              <button type="submit" class="btn btn-default">Entrar</button>
+              <a href="{% url 'auth_password_reset' %}" class="btn btn-link">Esqueceu a senha?</a>
             </div>
-            <button type="submit" class="btn btn-default">Entrar</button>
+
           </form>
           {%endif%}
         </div><!--/.nav-collapse -->
