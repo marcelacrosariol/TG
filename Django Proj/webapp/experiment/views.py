@@ -81,26 +81,40 @@ def getUserProfile(request, username):
     user = User.objects.get(username=username)
     appUser = AppUser.objects.get(usuario=user.id)
 
-    form = NotificationForm(request.POST or None)
-
     context = {
-        'form': form, 
         'user': user, 
         'appUser': appUser
     }
 
     return render(request, 'user_profile.html', context)    
 
-def changeNotifications(request, username):
+#TO_DO
+
+def editProfile(request, username):
+    form = AppUserForm(request.POST or None)
+
+    return render(request, 'edit_profile.html', {'form': form}) 
+
+    # return HttpResponseRedirect(reverse('userProfile', kwargs={'username':username}))
+
+def saveProfile(request, username):
+    email =  request.POST.get("email")
+    company = request.POST.get("company")
     choice = request.POST.get("choice")
 
     user = User.objects.get(username=username)
     appUser = AppUser.objects.get(usuario=user.id)
 
+    user.email = email
+    appUser.company = company
     appUser.notification = choice
+    
+    user.save()
     appUser.save()
-    return HttpResponseRedirect(reverse('userProfile', kwargs={'username':username}))
 
+    print(choice, email, company)
+    
+    return HttpResponseRedirect(reverse('userProfile', kwargs={'username':username}))
 
 def downloadInputFile(request):
     expId = request.GET.get('id')

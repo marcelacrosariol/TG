@@ -1,0 +1,24 @@
+{%extends "base.html" %}
+{% load crispy_forms_tags %}
+{% crispy form %}
+
+{% block title%}Perfil{%endblock%}
+
+{%block content%}
+
+<div class="row">
+  <div class = "col-sm-12 col-md-12 text-center">
+
+    <form method="POST" action="{% url 'saveProfile' request.user %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div id="formContent"> 
+            {{form.email | as_crispy_field}}
+            {{form.company  | as_crispy_field}} 
+            {{form.choice | as_crispy_field}}
+      </div>    
+      <input type="submit" class="btn btn-default btn-sm" value="Alterar">
+    </form>
+
+  </div>
+</div>
+{% endblock %}

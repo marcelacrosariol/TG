@@ -11,7 +11,7 @@
     <table class="table table-striped table-bordered">
         <thead>
           <tr>
-            <th colspan="2">Meu Perfil</th>
+            <th colspan="2">Meu Perfil &nbsp <a href="{% url 'editProfile' request.user  %}" class="btn btn-default btn-sm">Editar</a></th>
           </tr>
         </thead>
         <tbody>
@@ -24,7 +24,7 @@
           <td>{{user.appuser}}</td>
         </tr>
         <tr>
-          <td>Company</td>
+          <td>Instituição</td>
           <td>{{appUser.company}}</td>
         </tr>
         <tr>
@@ -46,11 +46,7 @@
         </tbody>
     </table>
     
-    <form method="POST" action="{% url 'changeNotifications' request.user %}" enctype="multipart/form-data">
-      {% csrf_token %}
-      {{form.choice | as_crispy_field}} 
-      <input type="submit" class="btn btn-default btn-sm" value="Alterar">
-    </form>
+   
 
   </div>
 </div>

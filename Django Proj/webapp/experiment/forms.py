@@ -5,6 +5,7 @@ from .models import Algorithm, Execution
 class AppUserForm(RegistrationFormUniqueEmail):
     nickname = forms.CharField(required=False)
     company = forms.CharField(required=False)
+    choice = forms.ChoiceField(choices=[('yes','Sim'),('no','Não')], initial='yes', widget=forms.RadioSelect, required=False,label="Notificação da conclusão de execuções por email?")
 
 
 class ExecutionForm(forms.Form):
@@ -20,10 +21,6 @@ class ContactForm(forms.Form):
     nome = forms.CharField()
     email = forms.EmailField()
     mensagem = forms.CharField(widget=forms.Textarea(attrs={'rows': 5}))
-
-
-class NotificationForm(forms.Form):
-    choice = forms.ChoiceField(choices=[('yes','Sim'),('no','Não')], initial='yes', widget=forms.RadioSelect, required=False,label="Notificação da conclusão de execuções por email?")
 
 class YearChartForm(forms.Form):
     years =[]

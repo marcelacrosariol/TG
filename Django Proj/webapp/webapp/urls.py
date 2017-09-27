@@ -32,7 +32,9 @@ urlpatterns = [
     url(r'^complete/', views.register_sucess, name='complete'),
     url(r'^accounts/', include('registration.backends.default.urls')),
     url(r'^profile/(?P<username>[a-zA-Z0-9]+)$', views.getUserProfile, name="userProfile"),
-    url(r'^profile/(?P<username>[a-zA-Z0-9]+)/change', views.changeNotifications, name="changeNotifications"),
+    # url(r'^profile/(?P<username>[a-zA-Z0-9]+)/change', views.changeNotifications, name="changeNotifications"),
+    url(r'^profile/(?P<username>[a-zA-Z0-9]+)/edit', views.editProfile, name="editProfile"),
+    url(r'^profile/(?P<username>[a-zA-Z0-9]+)/save', views.saveProfile, name="saveProfile"),
 ]
 
 if settings.DEBUG:
