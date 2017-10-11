@@ -27,3 +27,8 @@ class YearChartForm(forms.Form):
     for date in Execution.objects.dates('date_requisition','year'): years.append((date.year,date.year))
 
     year = forms.ChoiceField(choices=years, initial='2017', widget=forms.Select(attrs={'max_length': 4}), required=True, label="Selecione um ano")
+
+class AlgorithmForm(forms.ModelForm):
+    class Meta:
+      model = Algorithm
+      fields = ['nameAlg','desc','sample']

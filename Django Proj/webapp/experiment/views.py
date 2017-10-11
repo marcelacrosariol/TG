@@ -31,14 +31,12 @@ def about(request):
 
 def home(request):
     if not request.user.is_authenticated():
-        title = "Welcome"
+        title = "Bem-vindo"
         context = {
             'title': title
         }
         return render(request, "welcome.html", context)
     else:
-        # res = teste.delay()
-        # print res
         title = "Welcome %s" % request.user
         print(request.user.id)
         executionList = Execution.objects.filter(
@@ -46,7 +44,7 @@ def home(request):
         try:
             UserProf = AppUser.objects.get(usuario__id=request.user.id)
         except:
-            print ("Erro. Criando novo userProf")
+            print ("Erro. Criando novo perfilf")
             user = User.objects.get(id=request.user.id)
             UserProf = AppUser(usuario=user)
             UserProf.save()
@@ -305,6 +303,21 @@ def appStatistics(request):
     #to_json = json.dumps(items)
 
     return render(request, "statistics.html", {'form':form, 'dataset': json.dumps(items)})
+
+
+def addAlg(request):
+    form = AlgorithmForm(request.POST or None)
+    return render(request, "add_algorithm.html", {'form':form})
+
+def saveAlg(request):
+    name = request.POST.get('nameAlg')
+    desc= request.POST.get('desc')
+    sample = request.POST.get('sample')
+    path = Algorithm.objects.filter()
+    newAlg = Algorithm(nameAlg=name,desc=desc,sample=sample,command="./")
+    newAlg.save()
+    return HttpResponseRedirect(reverse('addAlgorithm'))
+
 
 @csrf_exempt
 def result(request):

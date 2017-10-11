@@ -30,6 +30,7 @@
                 <li><a class="dropdown-item" href="{% url 'userProfile' user %}">Perfil</a></li>
                 {% if request.user.is_superuser %}
                 <li><a class="dropdown-item" href="{% url 'appStatistics' %}">Estatísticas</a></li>
+                <li><a class="dropdown-item" href="{% url 'addAlgorithm' %}">Cadastrar algoritmo</a></li>
                 <li><a class="dropdown-item" href="/admin">Administrar</a></li> 
                 {% endif %}
               </ul>
