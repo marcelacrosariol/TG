@@ -24,7 +24,7 @@ class AppUser(models.Model):
     date_register = models.DateField('date_register', auto_now_add=True)
     last_access = models.DateField('last_access', auto_now=True)
     resultsPerPage = models.IntegerField(default=10)
-    notification = models.CharField(default="yes", max_length=4, blank=True)
+    notification = models.CharField(default="yes", choices=(("yes","Sim"),("no","Não")), max_length=4, blank=True)
 
     def __str__(self):
         return self.nickname

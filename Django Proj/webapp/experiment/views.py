@@ -7,14 +7,13 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from experiment.forms import *
 from experiment.models import Execution, Algorithm, AppUser
-from django.http import HttpResponseRedirect
-from django.http import HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse 
 from django.core.urlresolvers import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # from django.core.files import File
 # jsonview - Crispy validation
 
-import json
+import json, os
 from jsonview.decorators import json_view
 from crispy_forms.utils import render_crispy_form
 from crispy_forms.helper import FormHelper
@@ -23,11 +22,9 @@ from django.contrib import messages
 from experiment.paginator import paginate
 
 from experiment.tasks import RunExperiment
-import os
 from random import randint
 
-def about(request):
-    return HttpResponse(1)
+#################### HOME #################### 
 
 def home(request):
     if not request.user.is_authenticated():
@@ -71,48 +68,71 @@ def home(request):
         }
         return render(request, "home.html", context)
 
+#################### ABOUT #################### 
 
 def about(request):
     return render(request, "about.html", {})
 
+#################### CONTACT #################### 
+
+def contact(request):
+    form = ContactForm(request.POST or None)
+    if form.is_valid():
+        subject = 'Portal Friends - Mensagem de %s ' % (
+            form.cleaned_data.get("nome"))
+        from_email = settings.EMAIL_HOST_USER  
+        to_email = from_email
+        sender = form.cleaned_data.get("email")
+        message = "Contact: " + sender + "\n" + form.cleaned_data.get("mensagem")
+        send_mail(subject,
+                  message,
+                  from_email,
+                  [to_email],
+                  fail_silently=False)
+        return HttpResponseRedirect(reverse('contact'))
+    context = {
+        'form': form,
+    }
+    return render(request, "contact.html", context)
+
+#################### USER PROFILE / REGISTER #################### 
+
 def getUserProfile(request, username):
     user = User.objects.get(username=username)
     appUser = AppUser.objects.get(usuario=user.id)
+    
+    email = user.email
+    company = appUser.company
+    choice = appUser.notification
 
+    data={'email':email,'company':company,'choice':choice}
+    form = AppUserForm(request.POST or None, initial=data)
     context = {
         'user': user, 
-        'appUser': appUser
+        'appUser': appUser,
+        'form':form
     }
-
     return render(request, 'user_profile.html', context)    
-
-#TO_DO
-
-def editProfile(request, username):
-    form = AppUserForm(request.POST or None)
-
-    return render(request, 'edit_profile.html', {'form': form}) 
-
-    # return HttpResponseRedirect(reverse('userProfile', kwargs={'username':username}))
 
 def saveProfile(request, username):
     email =  request.POST.get("email")
     company = request.POST.get("company")
     choice = request.POST.get("choice")
 
-    user = User.objects.get(username=username)
-    appUser = AppUser.objects.get(usuario=user.id)
+    user = User.objects.filter(username=username).update(email=email)
+    appUser = AppUser.objects.filter(usuario=user)
 
-    user.email = email
-    appUser.company = company
-    appUser.notification = choice
-    
-    user.save()
-    appUser.save()
+    appUser.update(company=company,notification=choice)
 
-    print(choice, email, company)
-    
+    print(user, appUser[0].nickname)
+
     return HttpResponseRedirect(reverse('userProfile', kwargs={'username':username}))
+
+
+def register_sucess(request):
+    return render(request, "registration/registration_complete.html", {})
+
+#################### FILES DOWNLOAD / UPLOAD #################### 
 
 def downloadInputFile(request):
     expId = request.GET.get('id')
@@ -152,28 +172,52 @@ def downloadSample(request, path):
     response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
     return response
 
+#################### ALGORITHMS ####################
 
-def contact(request):
-    form = ContactForm(request.POST or None)
-    if form.is_valid():
-        subject = 'Portal Friends - Mensagem de %s ' % (
-            form.cleaned_data.get("nome"))
-        from_email = settings.EMAIL_HOST_USER  
-        to_email = from_email
-        sender = form.cleaned_data.get("email")
-        message = "Contact: " + sender + "\n" + form.cleaned_data.get("mensagem")
-        send_mail(subject,
-                  message,
-                  from_email,
-                  [to_email],
-                  fail_silently=False)
-        return HttpResponseRedirect(reverse('contact'))
-    context = {
-        'form': form,
-    }
-    return render(request, "contact.html", context)
+def addAlg(request):
+    form = AlgorithmForm(request.POST or None)
+    return render(request, "add_algorithm.html", {'form':form})
 
-# ajax
+def saveAlg(request):
+    name = request.POST.get('nameAlg')
+    desc= request.POST.get('desc')
+    if (request.FILES):
+        sample = request.FILES['sample']
+        algFile = request.FILES['file']   
+    newAlg = Algorithm(nameAlg=name,desc=desc,sample=sample,file=algFile, command='./')
+    newAlg.save()
+    temp = Algorithm.objects.get(nameAlg=name).file.path
+    newAlg.command = temp
+    newAlg.save()
+    return HttpResponseRedirect(reverse('addAlgorithm'))
+
+#################### STATISTICS ####################
+
+def appStatistics(request):
+    form = YearChartForm(request.POST or None)
+    if request.method == 'POST':
+        year = request.POST.get('year')
+    else: 
+        year = '2017' 
+    print(year)
+    
+    #Dataset
+    items = {}
+    #For each algorithm in the database
+    for algorithm in Algorithm.objects.all():
+        
+        data = []
+        label = algorithm.nameAlg
+        
+        for month in range(12):
+            qtd = Execution.objects.filter(algorithm=algorithm.pk,date_requisition__month=month+1, date_requisition__year=year).count()
+            data.append(qtd)
+        
+        items[algorithm.nameAlg] = data 
+
+    return render(request, "statistics.html", {'form':form, 'dataset': json.dumps(items)})
+
+#################### EXPERIMENTS / EXECUTION ####################
 
 @json_view
 @csrf_protect
@@ -277,52 +321,6 @@ def experimentsRemove(request):
         # objects = Model.objects.filter(id__in=object_ids)
     return HttpResponseRedirect(reverse('home'))
 
-def appStatistics(request):
-    form = YearChartForm(request.POST or None)
-    if request.method == 'POST':
-        year = request.POST.get('year')
-    else: 
-        year = '2017' 
-    print(year)
-    
-    #Dataset
-    items = {}
-    #For each algorithm in the database
-    for algorithm in Algorithm.objects.all():
-        
-        data = []
-        label = algorithm.nameAlg
-        
-        for month in range(12):
-            qtd = Execution.objects.filter(algorithm=algorithm.pk,date_requisition__month=month+1, date_requisition__year=year).count()
-            data.append(qtd)
-        
-        items[algorithm.nameAlg] = data 
-
-
-    #to_json = json.dumps(items)
-
-    return render(request, "statistics.html", {'form':form, 'dataset': json.dumps(items)})
-
-
-def addAlg(request):
-    form = AlgorithmForm(request.POST or None)
-    return render(request, "add_algorithm.html", {'form':form})
-
-def saveAlg(request):
-    name = request.POST.get('nameAlg')
-    desc= request.POST.get('desc')
-    if (request.FILES):
-        sample = request.FILES['sample']
-        algFile = request.FILES['file']   
-    newAlg = Algorithm(nameAlg=name,desc=desc,sample=sample,file=algFile, command='./')
-    newAlg.save()
-    temp = Algorithm.objects.get(nameAlg=name).file.path
-    newAlg.command = temp
-    newAlg.save()
-    return HttpResponseRedirect(reverse('addAlgorithm'))
-
-
 @csrf_exempt
 def result(request):
     if request.method == 'POST':
@@ -350,6 +348,3 @@ def result(request):
                 send_mail(subject, message,from_email,[to_email], fail_silently=False)
 
     return HttpResponse(1)
-
-def register_sucess(request):
-    return render(request, "registration/registration_complete.html", {})
