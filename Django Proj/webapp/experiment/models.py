@@ -9,6 +9,7 @@ class Algorithm(models.Model):
     desc = models.CharField(null=True, blank=False, max_length=500)
     command = models.CharField(null=False, blank=False, max_length=100)
     sample = models.FileField(upload_to="samples/", null=True, blank=True)
+    file = models.FileField(upload_to="algorithms/", null=True, blank=True)
 
     def __str__(self):
         return self.nameAlg

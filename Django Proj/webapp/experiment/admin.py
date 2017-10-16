@@ -10,8 +10,8 @@ class ExecutionAdmin(admin.ModelAdmin):
 	list_display = ['request_by', 'algorithm', 'time', 'date_requisition', 'status', 'inputFile', 'outputFile']
 
 class AlgAdmin(admin.ModelAdmin):
-	fields = ['nameAlg', 'desc', 'command', 'sample']
-	list_display = ['idAlg', 'nameAlg', 'desc', 'sample']
+	fields = ['nameAlg', 'desc', 'command', 'sample', 'file']
+	list_display = ['idAlg', 'nameAlg', 'desc', 'sample','file']
 
 # class NotesAdmin(admin.ModelAdmin):
 # 	fields = ['user', 'execution']

@@ -31,4 +31,4 @@ class YearChartForm(forms.Form):
 class AlgorithmForm(forms.ModelForm):
     class Meta:
       model = Algorithm
-      fields = ['nameAlg','desc','sample']
+      fields = ['nameAlg','desc','sample','file']

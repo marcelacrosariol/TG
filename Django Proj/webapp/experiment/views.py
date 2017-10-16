@@ -312,9 +312,13 @@ def addAlg(request):
 def saveAlg(request):
     name = request.POST.get('nameAlg')
     desc= request.POST.get('desc')
-    sample = request.POST.get('sample')
-    path = Algorithm.objects.filter()
-    newAlg = Algorithm(nameAlg=name,desc=desc,sample=sample,command="./")
+    if (request.FILES):
+        sample = request.FILES['sample']
+        algFile = request.FILES['file']   
+    newAlg = Algorithm(nameAlg=name,desc=desc,sample=sample,file=algFile, command='./')
+    newAlg.save()
+    temp = Algorithm.objects.get(nameAlg=name).file.path
+    newAlg.command = temp
     newAlg.save()
     return HttpResponseRedirect(reverse('addAlgorithm'))
 
