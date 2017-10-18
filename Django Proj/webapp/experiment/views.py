@@ -170,7 +170,7 @@ def downloadSample(request, path):
     response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
     return response
 
-#################### ALGORITHMS ####################
+#################### ADMIN - ALGORITHMS ####################
 
 def listAlg(request):
     listAlg = Algorithm.objects.all()
@@ -218,40 +218,36 @@ def removeAlg(request):
         # objects = Model.objects.filter(id__in=object_ids)
     return HttpResponseRedirect(reverse('listAlgorithm'))
 
-
 def saveAlg(request):
     name = request.POST.get('nameAlg')
     desc= request.POST.get('desc')
-    comp = request.POST.get('comp')
-
+    algFile = request.FILES['file']
+            
     newAlg = Algorithm()
 
     newAlg.nameAlg = name
     newAlg.desc = desc
     newAlg.command = './'
-
-    if (request.FILES):
-        if ('sample' in request.FILES): 
-            sample = request.FILES['sample']
-            newAlg.sample=sample
-        if ('file' in request.FILES):
-            algFile = request.FILES['file']
-            newAlg.file=algFile
-
+    newAlg.file=algFile
+   
+    if ('sample' in request.FILES): 
+        sample = request.FILES['sample']
+        newAlg.sample=sample
+        
     newAlg.save()
-
-    if (comp == 'no'):
-        newAlg.command= Algorithm.objects.get(nameAlg=name).file.path
-    else:
-        if (comp == 'c'):
-            os.system("gcc " + Algorithm.objects.get(nameAlg=name).file.path + " -o algorithms/" + name)
+    extension = algFile.name.split(".")[-1].lower()
+    
+    if (extension== 'c'):
+        os.system("gcc " + Algorithm.objects.get(nameAlg=name).file.path + " -o algorithms/" + name + ' 2> log.txt' )
         newAlg.command = './algorithms/' + name
 
     newAlg.save()
 
     return HttpResponseRedirect(reverse('listAlgorithm'))
 
-#################### STATISTICS ####################
+#################### ADMIN - EXECUTIONS ####################
+
+#################### ADMIN - STATISTICS ####################
 
 def appStatistics(request):
     form = YearChartForm(request.POST or None)

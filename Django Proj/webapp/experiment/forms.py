@@ -29,7 +29,6 @@ class YearChartForm(forms.Form):
     year = forms.ChoiceField(choices=years, initial='2017', widget=forms.Select(attrs={'max_length': 4}), required=True, label="Selecione um ano")
 
 class AlgorithmForm(forms.ModelForm):
-    comp = forms.ChoiceField(choices=[('no','Não compilar'),('c','C'),('fortran','Fortran')], initial='yes', widget=forms.RadioSelect, required=True,label='Linguagem a ser compilada')
     class Meta:
       model = Algorithm
       fields = ['nameAlg','desc','sample','file']
