@@ -10,9 +10,9 @@ class AppUserForm(RegistrationFormUniqueEmail):
 
 class ExecutionForm(forms.Form):
     Algoritmo = forms.ModelChoiceField(queryset=Algorithm.objects.all(),
-                                       empty_label="---Selecione um algoritmo---",
+                                       empty_label='---Selecione um algoritmo---',
                                        required=True,
-                                       to_field_name="nameAlg",
+                                       to_field_name='nameAlg',
                                        )
     Entrada = forms.FileField(required=False)
 
@@ -29,6 +29,13 @@ class YearChartForm(forms.Form):
     year = forms.ChoiceField(choices=years, initial='2017', widget=forms.Select(attrs={'max_length': 4}), required=True, label="Selecione um ano")
 
 class AlgorithmForm(forms.ModelForm):
+    comp = forms.ChoiceField(choices=[('no','Não compilar'),('c','C'),('fortran','Fortran')], initial='yes', widget=forms.RadioSelect, required=True,label='Linguagem a ser compilada')
     class Meta:
       model = Algorithm
       fields = ['nameAlg','desc','sample','file']
+      labels = {
+            'nameAlg': 'Algoritmo',
+            'desc': 'Descrição',
+            'sample': 'Exemplo de entrada',
+            'file': 'Arquivo' 
+                }

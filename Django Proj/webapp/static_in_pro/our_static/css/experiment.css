@@ -29,3 +29,18 @@
 	float: right;
 }
 
+#highlight{
+	color:white;
+}
+
+#highlight:hover{
+	color:#6db1ff;
+}
+
+.padding{
+	padding: 1% 25%
+}
+
+.sm-padding{
+	padding: 1% 0%;
+}

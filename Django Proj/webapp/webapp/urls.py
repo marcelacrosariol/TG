@@ -36,9 +36,14 @@ urlpatterns = [
     url(r'^profile/(?P<username>[a-zA-Z0-9]+)$', views.getUserProfile, name="userProfile"),
     url(r'^profile/(?P<username>[a-zA-Z0-9]+)/save', views.saveProfile, name="saveProfile"),
 
-    # add algorithm 
+    # algorithm 
+    url(r'^algorithm/$', views.listAlg, name="listAlgorithm"),
+    url(r'^algorithm/remove$', views.removeAlg, name="removeAlgorithm"),
+    url(r'^algorithm/(?P<alg>[a-zA-Z0-9]+)$', views.seeAlg, name="seeAlgorithm"),
+    url(r'^algorithm/(?P<idAlg>[a-zA-Z0-9]+)/update$',views.updateAlg, name="updateAlgorithm"),
     url(r'^addAlgorithm/$', views.addAlg, name="addAlgorithm"),
     url(r'^addAlgorithm/save',views.saveAlg, name="saveAlgorithm"),
+
 ]
 
 if settings.DEBUG:

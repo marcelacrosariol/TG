@@ -77,7 +77,7 @@ function drawStatisticsChart(){
     	options: {
   			title: {
     			display: true,
-    			text: 'Custom Chart Title'
+    			text: 'Número de execuções dos algoritmos - 2017'
   			},
   			scales:{
   				xAxes: [{

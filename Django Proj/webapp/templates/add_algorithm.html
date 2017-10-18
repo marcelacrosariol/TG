@@ -7,8 +7,7 @@
 {%block content%}
 
 <div class="row">
-  <div class = "col-sm-12 col-md-12 text-center">
-
+  <div class = "col-sm-12 center-block text-left padding">
     <form method="POST" action="{% url 'saveAlgorithm' %}" enctype="multipart/form-data">
       {% csrf_token %}
       <div id="formContent"> 

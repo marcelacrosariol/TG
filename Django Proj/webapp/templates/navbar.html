@@ -12,32 +12,23 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
+            {% if request.user.is_authenticated %}
+              <li><a href="{% url 'exp' %}">Nova execução</a></li>
+            {%endif%}
+            {% if request.user.is_superuser %}
+              <li><a href="{% url 'listAlgorithm' %}">Algoritmos </a></li>    
+              <li><a href="/admin">Administrar</a></li> 
+            {% else%}
             <li><a href="{% url 'about' %}">Sobre</a></li>
             <li><a href="{% url 'contact' %}">Contato</a></li>
-            {% if request.user.is_authenticated %}
-              <li><a href="{% url 'exp' %}">Experimentos</a></li>
             {%endif%}
+
           </ul>
 
           <ul class="nav navbar-nav navbar-right">
-
             {% if request.user.is_authenticated %}
-            <li class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown">
-               {{user}}  <span class="caret"></span>
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'userProfile' user %}">Perfil</a></li>
-                {% if request.user.is_superuser %}
-                <li><a class="dropdown-item" href="{% url 'appStatistics' %}">Estatísticas</a></li>
-                <li><a class="dropdown-item" href="{% url 'addAlgorithm' %}">Cadastrar algoritmo</a></li>
-                <li><a class="dropdown-item" href="/admin">Administrar</a></li> 
-                {% endif %}
-              </ul>
-            </li>
-            <li>
-              <a href="{% url 'auth_logout' %}">Sair</a>
-            </li>
+            <li><a href="{% url 'userProfile' user %}">{{user}}</a></li>
+            <li><a href="{% url 'auth_logout' %}">Sair</a></li>
             {%else%}
             <li class="active"><a href="{% url 'registration_register' %}">Registrar</a></li>
             {%endif%}

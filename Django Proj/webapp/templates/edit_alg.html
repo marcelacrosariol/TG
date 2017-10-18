@@ -1,0 +1,22 @@
+{%extends "base.html" %}
+{% load crispy_forms_tags %}
+{% crispy form %}
+
+{% block title%}{{title}}{%endblock%}
+
+
+{%block content%}
+<div class='row'>
+	<div class="padding">
+		<form method="POST" action="{% url 'updateAlgorithm' idAlg %}" enctype="multipart/form-data">
+			{% csrf_token %}	
+			<fieldset disabled="disabled"> {{form.nameAlg | as_crispy_field}} </fieldset>
+			{{form.desc | as_crispy_field}}
+			{{form.sample | as_crispy_field}}
+			{{form.file | as_crispy_field}}
+
+			<input type="submit" class="btn btn-default btn-sm" value="Salvar">
+		</form>
+	</div>
+</div>
+{%endblock%}

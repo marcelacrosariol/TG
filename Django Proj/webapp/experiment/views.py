@@ -124,8 +124,6 @@ def saveProfile(request, username):
 
     appUser.update(company=company,notification=choice)
 
-    print(user, appUser[0].nickname)
-
     return HttpResponseRedirect(reverse('userProfile', kwargs={'username':username}))
 
 
@@ -174,22 +172,84 @@ def downloadSample(request, path):
 
 #################### ALGORITHMS ####################
 
+def listAlg(request):
+    listAlg = Algorithm.objects.all()
+    return render(request, "algorithm.html", {'title': 'Algoritmos' ,'algorithms':listAlg})
+
+def seeAlg(request, alg):
+    title="Algoritmo"
+    alg = Algorithm.objects.get(idAlg=alg)
+
+    data = {'nameAlg': alg.nameAlg, 'desc':alg.desc, 'sample':alg.sample,'file':alg.file}
+    form = AlgorithmForm(request.POST or None, initial=data)
+
+    context={
+        'title': title,
+        'form': form,
+        'idAlg': alg.idAlg
+    }
+
+    return render(request, "edit_alg.html", context)
+
 def addAlg(request):
     form = AlgorithmForm(request.POST or None)
     return render(request, "add_algorithm.html", {'form':form})
 
+def updateAlg(request,idAlg):
+    desc = request.POST.get("desc")
+    clear = request.POST.get("sample-clear")
+    
+    if (clear == 'on'):
+        sample = None
+    else:
+        sample = request.FILES['sample']
+
+    algorithm = Algorithm.objects.filter(idAlg=idAlg).update(desc=desc,sample=sample)
+    return HttpResponseRedirect(reverse('listAlgorithm'))
+
+def removeAlg(request):
+    if request.method == 'POST':
+        data = request.POST.get('data')
+        print (data)
+        if data:
+            ids = data.split(",")
+            print (ids)
+            Algorithm.objects.filter(idAlg__in=ids).delete()
+        # objects = Model.objects.filter(id__in=object_ids)
+    return HttpResponseRedirect(reverse('listAlgorithm'))
+
+
 def saveAlg(request):
     name = request.POST.get('nameAlg')
     desc= request.POST.get('desc')
+    comp = request.POST.get('comp')
+
+    newAlg = Algorithm()
+
+    newAlg.nameAlg = name
+    newAlg.desc = desc
+    newAlg.command = './'
+
     if (request.FILES):
-        sample = request.FILES['sample']
-        algFile = request.FILES['file']   
-    newAlg = Algorithm(nameAlg=name,desc=desc,sample=sample,file=algFile, command='./')
+        if ('sample' in request.FILES): 
+            sample = request.FILES['sample']
+            newAlg.sample=sample
+        if ('file' in request.FILES):
+            algFile = request.FILES['file']
+            newAlg.file=algFile
+
     newAlg.save()
-    temp = Algorithm.objects.get(nameAlg=name).file.path
-    newAlg.command = temp
+
+    if (comp == 'no'):
+        newAlg.command= Algorithm.objects.get(nameAlg=name).file.path
+    else:
+        if (comp == 'c'):
+            os.system("gcc " + Algorithm.objects.get(nameAlg=name).file.path + " -o algorithms/" + name)
+        newAlg.command = './algorithms/' + name
+
     newAlg.save()
-    return HttpResponseRedirect(reverse('addAlgorithm'))
+
+    return HttpResponseRedirect(reverse('listAlgorithm'))
 
 #################### STATISTICS ####################
 
