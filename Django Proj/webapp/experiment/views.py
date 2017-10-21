@@ -24,6 +24,25 @@ from experiment.paginator import paginate
 from experiment.tasks import RunExperiment
 from random import randint
 
+def createPagination(request, appList, resultsPerPage):
+    paginator = Paginator(appList, resultsPerPage)
+    page = request.GET.get('page')
+    if page is None:
+        page = 1
+    try:
+        executions = paginator.page(page)
+    except PageNotAnInteger:
+        executions = paginator.page(1)
+    except EmptyPage:
+        executions = paginator.page(paginator.num_pages)  # da pra tratar
+    if paginator.count == 0:
+        data = None
+    else:
+        data = executions
+    pageI = paginate(page, paginator)
+
+    return data, pageI
+
 #################### HOME #################### 
 
 def home(request):
@@ -35,32 +54,20 @@ def home(request):
         return render(request, "welcome.html", context)
     else:
         title = "Welcome %s" % request.user
-        print(request.user.id)
+        # print(request.user.id)
         executionList = Execution.objects.filter(
             request_by__usuario__id=request.user.id).order_by('-id')
         try:
             UserProf = AppUser.objects.get(usuario__id=request.user.id)
         except:
-            print ("Erro. Criando novo perfilf")
+            print ("Erro. Criando novo perfil")
             user = User.objects.get(id=request.user.id)
             UserProf = AppUser(usuario=user)
             UserProf.save()
             print ("Criado novo UserProf")
-        paginator = Paginator(executionList, UserProf.resultsPerPage)
-        page = request.GET.get('page')
-        if page is None:
-            page = 1
-        try:
-            executions = paginator.page(page)
-        except PageNotAnInteger:
-            executions = paginator.page(1)
-        except EmptyPage:
-            executions = paginator.page(paginator.num_pages)  # da pra tratar
-        if paginator.count == 0:
-            data = None
-        else:
-            data = executions
-        pageI = paginate(page, paginator)
+
+        data, pageI = createPagination(request, executionList, UserProf.resultsPerPage)
+
         context = {
             'title': title,
             'data': data,
@@ -95,41 +102,6 @@ def contact(request):
     }
     return render(request, "contact.html", context)
 
-#################### USER PROFILE / REGISTER #################### 
-
-def getUserProfile(request, username):
-    user = User.objects.get(username=username)
-    appUser = AppUser.objects.get(usuario=user.id)
-    
-    email = user.email
-    company = appUser.company
-    choice = appUser.notification
-
-    data={'email':email,'company':company,'choice':choice}
-    form = AppUserForm(request.POST or None, initial=data)
-    context = {
-        'user': user, 
-        'appUser': appUser,
-        'form':form
-    }
-    return render(request, 'user_profile.html', context)    
-
-def saveProfile(request, username):
-    email =  request.POST.get("email")
-    company = request.POST.get("company")
-    choice = request.POST.get("choice")
-
-    user = User.objects.filter(username=username).update(email=email)
-    appUser = AppUser.objects.filter(usuario=user)
-
-    appUser.update(company=company,notification=choice)
-
-    return HttpResponseRedirect(reverse('userProfile', kwargs={'username':username}))
-
-
-def register_sucess(request):
-    return render(request, "registration/registration_complete.html", {})
-
 #################### FILES DOWNLOAD / UPLOAD #################### 
 
 def downloadInputFile(request):
@@ -153,13 +125,13 @@ def downloadOutputFile(request):
     expId = request.GET.get('id')
     execution = Execution.objects.get(pk=expId)
     if (execution.request_by.usuario.id == request.user.id):
-        print (execution.outputFile.url)
-        print ("Autorizado")
+        # print (execution.outputFile.url)
+        # print ("Autorizado")
         response = HttpResponse(
             execution.outputFile, content_type='application/force-download')
         response['Content-Disposition'] = 'attachment; filename="Resultado-Experimento-' + str(expId) + '"'
         return response
-    print ("Nao autorizado")
+    # print ("Nao autorizado")
     # criar alerta
     return HttpResponseRedirect(reverse('home'))
 
@@ -173,8 +145,18 @@ def downloadSample(request, path):
 #################### ADMIN - ALGORITHMS ####################
 
 def listAlg(request):
-    listAlg = Algorithm.objects.all()
-    return render(request, "algorithm.html", {'title': 'Algoritmos' ,'algorithms':listAlg})
+    algorithmList = Algorithm.objects.filter()
+    perPage = AppUser.objects.get(usuario=request.user.id).resultsPerPage
+
+    data, pageI = createPagination(request, algorithmList, perPage)
+
+    context = {
+        'title': 'Algoritmos',
+        'data': data,
+        'pagesIndex': pageI,
+    }
+
+    return render(request, "admin/algorithm.html", context)
 
 def seeAlg(request, alg):
     title="Algoritmo"
@@ -189,11 +171,11 @@ def seeAlg(request, alg):
         'idAlg': alg.idAlg
     }
 
-    return render(request, "edit_alg.html", context)
+    return render(request, "admin/edit_alg.html", context)
 
 def addAlg(request):
     form = AlgorithmForm(request.POST or None)
-    return render(request, "add_algorithm.html", {'form':form})
+    return render(request, "admin/add_algorithm.html", {'form':form})
 
 def updateAlg(request,idAlg):
     desc = request.POST.get("desc")
@@ -210,10 +192,8 @@ def updateAlg(request,idAlg):
 def removeAlg(request):
     if request.method == 'POST':
         data = request.POST.get('data')
-        print (data)
         if data:
             ids = data.split(",")
-            print (ids)
             Algorithm.objects.filter(idAlg__in=ids).delete()
         # objects = Model.objects.filter(id__in=object_ids)
     return HttpResponseRedirect(reverse('listAlgorithm'))
@@ -245,8 +225,6 @@ def saveAlg(request):
 
     return HttpResponseRedirect(reverse('listAlgorithm'))
 
-#################### ADMIN - EXECUTIONS ####################
-
 #################### ADMIN - STATISTICS ####################
 
 def appStatistics(request):
@@ -255,8 +233,7 @@ def appStatistics(request):
         year = request.POST.get('year')
     else: 
         year = '2017' 
-    print(year)
-    
+
     #Dataset
     items = {}
     #For each algorithm in the database
@@ -271,7 +248,115 @@ def appStatistics(request):
         
         items[algorithm.nameAlg] = data 
 
-    return render(request, "statistics.html", {'form':form, 'dataset': json.dumps(items)})
+    return render(request, "admin/statistics.html", {'form':form, 'dataset': json.dumps(items)})
+
+#################### ADMIN - USERS ####################
+
+def listUsers(request):
+    appUserList = AppUser.objects.filter()
+
+    perPage = AppUser.objects.get(usuario=request.user.id).resultsPerPage
+
+    data, pageI = createPagination(request, appUserList, perPage)
+
+    context = {
+        'title': 'Usuários',
+        'data': data,
+        'pagesIndex': pageI,
+    }
+
+    return render(request, "admin/users.html", context)
+
+def seeUser(request, appUser, authUser):
+
+    authUser = User.objects.get(username=authUser)
+    appU = AppUser.objects.get(nickname=appUser, usuario=authUser.id)
+
+    nickname = appU.nickname
+    company = appU.company
+    choice = appU.notification
+    resultsPerPage = appU.resultsPerPage
+
+    email = appU.usuario.email
+    staff = appU.usuario.is_staff
+    active = appU.usuario.is_active
+
+    dataAppUser = {'nickname': nickname, 'company': company, 'choice': choice,'resultsPerPage':resultsPerPage}
+    dataUser = {'email': email, 'is_staff': staff,'is_active':active}
+
+    appUserForm = AppUserForm(request.POST or None, initial=dataAppUser)
+    userForm = UserForm(request.POST or None, initial=dataUser)
+
+    context = {
+        'title': 'Editar Usuário',
+        'appUser': appUser,
+        'authUser': authUser.username,
+        'appUserForm': appUserForm,
+        'userForm': userForm,
+    }
+
+    return render(request, 'admin/edit_user.html', context)
+
+# def removeUser():
+
+
+#################### USER PROFILE / REGISTER #################### 
+
+def getUserProfile(request, username):
+    user = User.objects.get(username=username)
+    appUser = AppUser.objects.get(usuario=user.id)
+    
+    email = user.email
+    company = appUser.company
+    choice = appUser.notification
+    resultsPerPage = appUser.resultsPerPage
+
+    data={'email':email,'company':company,'choice':choice, 'resultsPerPage': resultsPerPage}
+    form = AppUserForm(request.POST or None, initial=data)
+    context = {
+        'user': user, 
+        'appUser': appUser,
+        'form':form
+    }
+    return render(request, 'user_profile.html', context)    
+
+def saveProfile(request, uname):
+    email =  request.POST.get("email")
+    company = request.POST.get("company")
+    choice = request.POST.get("choice")
+    resultsPerPage = request.POST.get("resultsPerPage")
+
+    #verificar se duplica email
+    authUser = User.objects.filter(username=uname)
+    authUser.update(email=email)
+
+    appUser = AppUser.objects.filter(usuario=authUser[0].id)
+
+    appUser.update(company=company,notification=choice, resultsPerPage=resultsPerPage)
+
+    if (request.user.is_superuser and 'nickname' in request.POST.dict()):
+        nickname = request.POST.get("nickname")
+        is_staff = request.POST.get("is_staff")
+        is_active = request.POST.get("is_active")
+
+        print(nickname)
+
+        staff = True if is_staff == 'on' else False
+        active = True if is_active == 'on' else False
+
+        # print(is_active, active)
+        appUser.update(nickname=nickname)
+        authUser.update(is_staff=staff,is_active=active)
+
+        return HttpResponseRedirect(reverse('listUsers'))
+
+    return HttpResponseRedirect(reverse('home'))
+    # return HttpResponseRedirect(reverse('userProfile', kwargs={'username':uname}))
+
+
+def register_sucess(request):
+    return render(request, "registration/registration_complete.html", {})
+
 
 #################### EXPERIMENTS / EXECUTION ####################
 
@@ -404,3 +489,7 @@ def result(request):
                 send_mail(subject, message,from_email,[to_email], fail_silently=False)
 
     return HttpResponse(1)
+
+
+#################### NAVIGATION ####################
+

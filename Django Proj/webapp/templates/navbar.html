@@ -21,7 +21,8 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             {% if request.user.is_superuser %}
-              <li><a href="{% url 'listAlgorithm' %}">Algoritmos </a></li>    
+              <li><a href="{% url 'listAlgorithm' %}">Algoritmos </a></li>
+              <li><a href="{% url 'listUsers' %}">Usuários </a></li>    
               <li><a href="/admin">Administrar</a></li> 
             {% else%}
             <li><a href="{% url 'about' %}">Sobre</a></li>

@@ -13,6 +13,9 @@
     from { transform: scale(1) rotate(0deg);}
     to { transform: scale(1) rotate(360deg);}
 }
+form{
+	display: inline;
+}
 
 #hlpAlg{
 	display: none;
@@ -41,6 +44,18 @@
 	padding: 1% 25%
 }
 
+.md-padding{
+	padding: 1% 8%;
+}
+
 .sm-padding{
-	padding: 1% 0%;
+	padding: 0% 0% 1%;
+}
+
+.btn-right{
+	float: right;
+}
+
+.btn-left{
+	float: left;
 }

@@ -20,11 +20,10 @@ urlpatterns = [
         name='downloadOutputFile'),
     url(r'^experiment/sample/(?P<path>[a-zA-Z0-9]+)', views.downloadSample,
         name='sampleDownload'),
+    url(r'^experiments/result$', views.result, name='result'),
 
     #django admin
-    url(r'^experiments/result$', views.result, name='result'),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^statistics', views.appStatistics, name='appStatistics'),
 
     # urls register
     url(r'^accounts/register/', regbackend.MyRegistrationView.as_view(),
@@ -33,16 +32,23 @@ urlpatterns = [
     url(r'^accounts/', include('registration.backends.default.urls')),
 
     # user profile
-    url(r'^profile/(?P<username>[a-zA-Z0-9]+)$', views.getUserProfile, name="userProfile"),
-    url(r'^profile/(?P<username>[a-zA-Z0-9]+)/save', views.saveProfile, name="saveProfile"),
+    url(r'^profile/(?P<username>[a-zA-Z0-9\u00C0-\u00FF]+)$', views.getUserProfile, name="userProfile"),
+    url(r'^profile/(?P<uname>[a-zA-Z0-9\u00C0-\u00FF]+)/save', views.saveProfile, name="saveProfile"),
 
-    # algorithm 
-    url(r'^algorithm/$', views.listAlg, name="listAlgorithm"),
-    url(r'^algorithm/remove$', views.removeAlg, name="removeAlgorithm"),
-    url(r'^algorithm/(?P<alg>[a-zA-Z0-9]+)$', views.seeAlg, name="seeAlgorithm"),
-    url(r'^algorithm/(?P<idAlg>[a-zA-Z0-9]+)/update$',views.updateAlg, name="updateAlgorithm"),
-    url(r'^addAlgorithm/$', views.addAlg, name="addAlgorithm"),
-    url(r'^addAlgorithm/save',views.saveAlg, name="saveAlgorithm"),
+    # ADMIN algorithm 
+    url(r'^admin/algorithms/$', views.listAlg, name="listAlgorithm"), #READ
+    url(r'^admin/algorithm/(?P<alg>[a-zA-Z0-9]+)$', views.seeAlg, name="seeAlgorithm"), #READ
+    url(r'^admin/algorithm/remove$', views.removeAlg, name="removeAlgorithm"), #DELETE
+    url(r'^admin/algorithm/(?P<idAlg>[a-zA-Z0-9]+)/update$',views.updateAlg, name="updateAlgorithm"), #UPDATE
+    url(r'^admin/addAlgorithm/$', views.addAlg, name="addAlgorithm"), #CREATE
+    url(r'^admin/addAlgorithm/save',views.saveAlg, name="saveAlgorithm"), #CREATE
+    url(r'^admin/algorithms/statistics', views.appStatistics, name='appStatistics'),
+
+    # ADMIN users
+    url(r'^admin/users/$', views.listUsers, name="listUsers"), #READ
+    url(r'^admin/users/(?P<appUser>[a-zA-Z0-9\u00C0-\u00FF]+)_(?P<authUser>[a-zA-Z0-9\u00C0-\u00FF]+)$', views.seeUser, name="seeUser"), #READ
+#     url(r'^admin/users/remove$', views.removeAlg, name="removeUser"), #DELETE
+#     url(r'^admin/users/(?P<idAlg>[a-zA-Z0-9]+)/update$',views.updateUser, name="updateUser"), #UPDATE
 
 ]
 
