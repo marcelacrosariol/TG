@@ -2,11 +2,25 @@ from django import forms
 from registration.forms import RegistrationFormUniqueEmail
 from .models import Algorithm, Execution
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import SetPasswordForm
+
+class PasswdChangeForm(SetPasswordForm):
+  error_messages = {'password_mismatch': "As duas senhas não são iguais.",}
+  
+  new_password1 = forms.CharField(label="Nova senha",
+                                    widget=forms.PasswordInput,
+                                    required=False)
+  new_password2 = forms.CharField(label="Confirmação da nova senha",
+                                    widget=forms.PasswordInput,
+                                    required=False)
 
 class AppUserForm(RegistrationFormUniqueEmail):
+    username = forms.CharField(required=True, label='Usuário', max_length=20, help_text="Máximo 20 caracteres")
+    password1 = forms.CharField(label="Senha", widget=forms.PasswordInput)
+    password2 = forms.CharField(label="Confirmação da senha", widget=forms.PasswordInput, help_text="Digite a mesma senha do campo anterior")
     nickname = forms.CharField(required=False, label='Nome', max_length=30)
     company = forms.CharField(required=False, label='Empresa / Instituição', max_length=30)
-    resultsPerPage =forms.IntegerField(required=False, initial=10)
+    resultsPerPage =forms.IntegerField(required=False, initial=10, label="Resultados por página")
     choice = forms.ChoiceField(choices=[('yes','Sim'),('no','Não')], initial='yes', widget=forms.Select, required=False,label="Notificação da conclusão de execuções por email?")
 
 class ExecutionForm(forms.Form):
@@ -52,5 +66,8 @@ class UserForm(forms.ModelForm):
             'password': 'Senha',
             'user_permissions': 'Permissões',
             'is_staff': 'Administrador', 
-            'is_active': 'Conta Ativada', 
+            'is_active': 'Conta Ativa', 
                 }
+    help_text = {
+            'is_active': 'Define se a conta está ativa',
+    }

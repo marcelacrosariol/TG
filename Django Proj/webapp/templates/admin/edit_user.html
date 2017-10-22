@@ -2,7 +2,6 @@
 {% load crispy_forms_tags %}
 {% load static %}
 
-
 {% block head_title%}{{title}}{%endblock%}
 
 {% block content %}
@@ -13,6 +12,7 @@
 		{% csrf_token%}
 		<h3>{{authUser}}</h3>
 		{{appUserForm.nickname | as_crispy_field}}
+		{{passwdForm | crispy }}
 		{{userForm.email | as_crispy_field}}
 		{{appUserForm.choice | as_crispy_field}}
 		{{appUserForm.company | as_crispy_field}}

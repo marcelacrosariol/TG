@@ -13,16 +13,15 @@ urlpatterns = [
     url(r'^experiments/checkForm$',
         views.checkForm , name='checkForm'),
     url(r'^experiments/$', views.experiments, name='exp'),
-    url(r'^experiments/remove$', views.experimentsRemove, name='expRemove'),
     url(r'^experiments/downloadInputFile', views.downloadInputFile,
         name='downloadInputFile'),
     url(r'^experiments/downloadOutputFile', views.downloadOutputFile,
         name='downloadOutputFile'),
-    url(r'^experiment/sample/(?P<path>[a-zA-Z0-9]+)', views.downloadSample,
+    url(r'^experiment/sample/(?P<path>[a-zA-Z0-9\u00C0-\u00FF]+)', views.downloadSample,
         name='sampleDownload'),
     url(r'^experiments/result$', views.result, name='result'),
 
-    #django admin
+    # django admin
     url(r'^admin/', include(admin.site.urls)),
 
     # urls register
@@ -35,21 +34,22 @@ urlpatterns = [
     url(r'^profile/(?P<username>[a-zA-Z0-9\u00C0-\u00FF]+)$', views.getUserProfile, name="userProfile"),
     url(r'^profile/(?P<uname>[a-zA-Z0-9\u00C0-\u00FF]+)/save', views.saveProfile, name="saveProfile"),
 
+    # ADMIN
+    url(r'^admin/remove/(?P<model>[a-zA-Z0-9\u00C0-\u00FF]+)$', views.removeList, name="removeList"), #DELETE
+
     # ADMIN algorithm 
     url(r'^admin/algorithms/$', views.listAlg, name="listAlgorithm"), #READ
-    url(r'^admin/algorithm/(?P<alg>[a-zA-Z0-9]+)$', views.seeAlg, name="seeAlgorithm"), #READ
-    url(r'^admin/algorithm/remove$', views.removeAlg, name="removeAlgorithm"), #DELETE
-    url(r'^admin/algorithm/(?P<idAlg>[a-zA-Z0-9]+)/update$',views.updateAlg, name="updateAlgorithm"), #UPDATE
-    url(r'^admin/addAlgorithm/$', views.addAlg, name="addAlgorithm"), #CREATE
-    url(r'^admin/addAlgorithm/save',views.saveAlg, name="saveAlgorithm"), #CREATE
+    url(r'^admin/algorithms/(?P<alg>[a-zA-Z0-9\u00C0-\u00FF]+)$', views.seeAlg, name="seeAlgorithm"), #READ
+    url(r'^admin/algorithms/(?P<idAlg>[a-zA-Z0-9\u00C0-\u00FF]+)/update$',views.updateAlg, name="updateAlgorithm"), #UPDATE
+    url(r'^admin/algorithms/addAlgorithm/$', views.addAlg, name="addAlgorithm"), #CREATE
+    url(r'^admin/algorithms/addAlgorithm/save',views.saveAlg, name="saveAlgorithm"), #CREATE
     url(r'^admin/algorithms/statistics', views.appStatistics, name='appStatistics'),
 
     # ADMIN users
     url(r'^admin/users/$', views.listUsers, name="listUsers"), #READ
     url(r'^admin/users/(?P<appUser>[a-zA-Z0-9\u00C0-\u00FF]+)_(?P<authUser>[a-zA-Z0-9\u00C0-\u00FF]+)$', views.seeUser, name="seeUser"), #READ
-#     url(r'^admin/users/remove$', views.removeAlg, name="removeUser"), #DELETE
-#     url(r'^admin/users/(?P<idAlg>[a-zA-Z0-9]+)/update$',views.updateUser, name="updateUser"), #UPDATE
-
+    url(r'^admin/users/addUser/$', views.addUser, name="addUser"), #CREATE    
+    url(r'^admin/users/addUser/save',views.saveUser, name="saveUser"), #CREATE
 ]
 
 if settings.DEBUG:

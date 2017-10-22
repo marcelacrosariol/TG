@@ -24,39 +24,24 @@ from experiment.paginator import paginate
 from experiment.tasks import RunExperiment
 from random import randint
 
-def createPagination(request, appList, resultsPerPage):
-    paginator = Paginator(appList, resultsPerPage)
-    page = request.GET.get('page')
-    if page is None:
-        page = 1
-    try:
-        executions = paginator.page(page)
-    except PageNotAnInteger:
-        executions = paginator.page(1)
-    except EmptyPage:
-        executions = paginator.page(paginator.num_pages)  # da pra tratar
-    if paginator.count == 0:
-        data = None
-    else:
-        data = executions
-    pageI = paginate(page, paginator)
-
-    return data, pageI
-
 #################### HOME #################### 
 
 def home(request):
-    if not request.user.is_authenticated():
-        title = "Bem-vindo"
+    title = "Home"
+    if not request.user.is_authenticated(): 
         context = {
             'title': title
         }
         return render(request, "welcome.html", context)
     else:
-        title = "Welcome %s" % request.user
-        # print(request.user.id)
-        executionList = Execution.objects.filter(
-            request_by__usuario__id=request.user.id).order_by('-id')
+        form = (request.POST or None)
+        showOpt = 'Todas'
+        if request.method == 'POST':
+            showOpt = request.POST.get("showOpt")
+            executionList = Execution.objects.filter().order_by('-id') if showOpt == 'Todas' else Execution.objects.filter(request_by__usuario__id=request.user.id).order_by('-id')
+        else:
+            executionList = Execution.objects.filter(request_by__usuario__id=request.user.id).order_by('-id')
+
         try:
             UserProf = AppUser.objects.get(usuario__id=request.user.id)
         except:
@@ -69,6 +54,7 @@ def home(request):
         data, pageI = createPagination(request, executionList, UserProf.resultsPerPage)
 
         context = {
+            'showOpt': showOpt,
             'title': title,
             'data': data,
             'pagesIndex': pageI,
@@ -145,7 +131,7 @@ def downloadSample(request, path):
 #################### ADMIN - ALGORITHMS ####################
 
 def listAlg(request):
-    algorithmList = Algorithm.objects.filter()
+    algorithmList = Algorithm.objects.filter().order_by('-idAlg') 
     perPage = AppUser.objects.get(usuario=request.user.id).resultsPerPage
 
     data, pageI = createPagination(request, algorithmList, perPage)
@@ -160,15 +146,16 @@ def listAlg(request):
 
 def seeAlg(request, alg):
     title="Algoritmo"
-    alg = Algorithm.objects.get(idAlg=alg)
 
-    data = {'nameAlg': alg.nameAlg, 'desc':alg.desc, 'sample':alg.sample,'file':alg.file}
+    algL = Algorithm.objects.get(idAlg=alg)
+
+    data = {'nameAlg': algL.nameAlg, 'desc':algL.desc, 'sample':algL.sample,'file':algL.file}
     form = AlgorithmForm(request.POST or None, initial=data)
 
     context={
         'title': title,
         'form': form,
-        'idAlg': alg.idAlg
+        'idAlg': algL.idAlg,
     }
 
     return render(request, "admin/edit_alg.html", context)
@@ -181,23 +168,14 @@ def updateAlg(request,idAlg):
     desc = request.POST.get("desc")
     clear = request.POST.get("sample-clear")
     
-    if (clear == 'on'):
+    if (clear == 'on' or 'sample' not in request.FILES):
         sample = None
     else:
         sample = request.FILES['sample']
 
     algorithm = Algorithm.objects.filter(idAlg=idAlg).update(desc=desc,sample=sample)
     return HttpResponseRedirect(reverse('listAlgorithm'))
-
-def removeAlg(request):
-    if request.method == 'POST':
-        data = request.POST.get('data')
-        if data:
-            ids = data.split(",")
-            Algorithm.objects.filter(idAlg__in=ids).delete()
-        # objects = Model.objects.filter(id__in=object_ids)
-    return HttpResponseRedirect(reverse('listAlgorithm'))
-
+        
 def saveAlg(request):
     name = request.POST.get('nameAlg')
     desc= request.POST.get('desc')
@@ -253,14 +231,15 @@ def appStatistics(request):
 #################### ADMIN - USERS ####################
 
 def listUsers(request):
-    appUserList = AppUser.objects.filter()
+    title = 'Usuários'
+    appUserList = AppUser.objects.filter().order_by('-id')
 
     perPage = AppUser.objects.get(usuario=request.user.id).resultsPerPage
 
     data, pageI = createPagination(request, appUserList, perPage)
 
     context = {
-        'title': 'Usuários',
+        'title': title,
         'data': data,
         'pagesIndex': pageI,
     }
@@ -286,6 +265,7 @@ def seeUser(request, appUser, authUser):
 
     appUserForm = AppUserForm(request.POST or None, initial=dataAppUser)
     userForm = UserForm(request.POST or None, initial=dataUser)
+    passwdForm = PasswdChangeForm(request.POST or None)
 
     context = {
         'title': 'Editar Usuário',
@@ -293,11 +273,50 @@ def seeUser(request, appUser, authUser):
         'authUser': authUser.username,
         'appUserForm': appUserForm,
         'userForm': userForm,
+        'passwdForm': passwdForm,
     }
 
     return render(request, 'admin/edit_user.html', context)
 
-# def removeUser():
+def addUser(request):
+    title = 'Novo usuário'
+    appForm = AppUserForm(request.POST or None)
+    uForm = UserForm(request.POST or None)
+    context ={
+        'title': title,
+        'appForm': appForm,
+        'uForm': uForm,
+    }
+
+    return render(request,'admin/add_user.html',context)
+
+def saveUser(request):
+    username = request.POST.get("username")
+    email = request.POST.get("email")
+    password = request.POST.get("password1")
+    is_active = request.POST.get('is_active')
+
+    nickname = request.POST.get("nickname")
+    company = request.POST.get("company")
+    resultsPerPage = request.POST.get("resultsPerPage")
+    notification = request.POST.get("choice")
+
+    active = True if is_active == 'on' else False
+
+    user = User(username=username, 
+            email=email, 
+            is_active=active)
+    user.set_password(password)
+    user.save()
+
+    appUser = AppUser(nickname=nickname,
+        company=company,
+        resultsPerPage=resultsPerPage,
+        notification=notification,
+        usuario=user)
+    appUser.save()
+
+    return HttpResponseRedirect(reverse('listUsers'))
 
 
 #################### USER PROFILE / REGISTER #################### 
@@ -339,7 +358,9 @@ def saveProfile(request, uname):
         is_staff = request.POST.get("is_staff")
         is_active = request.POST.get("is_active")
 
-        print(nickname)
+        passwd = request.POST.get("new_password1")
+        if(passwd != ''):
+            authUser[0].set_password(passwd)
 
         staff = True if is_staff == 'on' else False
         active = True if is_active == 'on' else False
@@ -451,17 +472,7 @@ def experiments(request):
         'help': hlp
     }
     return render(request, "experiments.html", context)
-
-def experimentsRemove(request):
-    if request.method == 'POST':
-        data = request.POST.get('data')
-        if data:
-            ids = data.split(",")
-            print (ids)
-            Execution.objects.filter(id__in=ids).delete()
-        # objects = Model.objects.filter(id__in=object_ids)
-    return HttpResponseRedirect(reverse('home'))
-
+           
 @csrf_exempt
 def result(request):
     if request.method == 'POST':
@@ -491,5 +502,42 @@ def result(request):
     return HttpResponse(1)
 
 
-#################### NAVIGATION ####################
+#################### PAGINATION ####################
 
+def createPagination(request, appList, resultsPerPage):
+    paginator = Paginator(appList, resultsPerPage)
+    page = request.GET.get('page')
+    if page is None:
+        page = 1
+    try:
+        executions = paginator.page(page)
+    except PageNotAnInteger:
+        executions = paginator.page(1)
+    except EmptyPage:
+        executions = paginator.page(paginator.num_pages)  # da pra tratar
+    if paginator.count == 0:
+        data = None
+    else:
+        data = executions
+    pageI = paginate(page, paginator)
+
+    return data, pageI
+
+
+#################### REMOVE FROM LIST PAGE - ONE OR MANY ####################
+
+def removeList(request, model):
+    if request.method == 'POST':
+        data = request.POST.get('data')
+        if data:
+            ids = data.split(",")
+            if(model == 'Algoritmos'):
+                Algorithm.objects.filter(idAlg__in=ids).delete()
+                return HttpResponseRedirect(reverse('listAlgorithm'))
+            if(model == 'Home'):
+                Execution.objects.filter(id__in=ids).delete()
+                return HttpResponseRedirect(reverse('home'))
+            if(model == 'Usuários'):
+                AppUser.objects.filter(usuario__in=ids).delete()
+                User.objects.filter(id__in=ids).delete()
+                return HttpResponseRedirect(reverse('listUsers'))

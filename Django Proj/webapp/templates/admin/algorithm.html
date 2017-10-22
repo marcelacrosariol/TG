@@ -12,9 +12,9 @@
 
   	<div class='sm-padding'>
   		<a href="{% url 'addAlgorithm' %}"><button type="button" class="btn btn-success btn-sm">Cadastrar novo</button></a>
-      <form id="formRemove" method='POST' action='{% url 'removeAlgorithm' %}' enctype="multipart/form-data">
-            {% csrf_token%}
-            <input type="submit" id="btExcluir" class="btn btn-default btn-sm" value="Excluir">
+      <form id="formRemove" method='POST' action='{% url 'removeList' title %}' enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="submit" id="btExcluir" class="btn btn-default btn-sm" value="Excluir">
       </form>
   		<a href="{% url 'appStatistics' %}"><button type="button" class="btn btn-link btn-sm">Estatísticas</button></a>
     </div>

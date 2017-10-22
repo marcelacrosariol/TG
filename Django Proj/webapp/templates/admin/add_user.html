@@ -1,0 +1,22 @@
+{%extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block head_title%}{{title}}{%endblock%}
+
+{% block content %}
+
+<div class='row'>
+	<div class='padding'>
+		<form method="POST" action="{% url 'saveUser' %}" enctype="multipart/form-data">
+		{% csrf_token%}
+		<h3>Novo usuário</h3>
+		{{appForm | crispy}}
+		{{uForm.is_active | as_crispy_field }}
+		{{tForm}}
+	    <input type="submit" id="btExcluir" class="btn btn-default btn-sm" value="Salvar">
+		</form>
+
+	</div>
+</div>
+{%endblock%}

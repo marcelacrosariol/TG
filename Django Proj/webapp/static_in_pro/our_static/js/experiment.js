@@ -97,7 +97,7 @@ function drawStatisticsChart(){
 
 
 // Call Functions
-setHandlers();
+// setHandlers();
 
 if(document.getElementById('showDesc')){
 	setAlgorithmDescription();	
