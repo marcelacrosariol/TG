@@ -121,11 +121,12 @@ def downloadOutputFile(request):
     # criar alerta
     return HttpResponseRedirect(reverse('home'))
 
-def downloadSample(request, path):
-    file = Algorithm.objects.get(nameAlg=path).sample
-    file_path = os.path.join(settings.MEDIA_ROOT, path)
+def downloadSample(request, alg):
+    file = Algorithm.objects.get(nameAlg=alg).sample
+    file_path = file.path
+    
     response = HttpResponse(file, content_type='application/force-download')
-    response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
+    response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path) 
     return response
 
 #################### ADMIN - ALGORITHMS ####################
@@ -168,12 +169,14 @@ def updateAlg(request,idAlg):
     desc = request.POST.get("desc")
     clear = request.POST.get("sample-clear")
     
-    if (clear == 'on' or 'sample' not in request.FILES):
-        sample = None
-    else:
-        sample = request.FILES['sample']
+    algorithm = Algorithm.objects.get(idAlg=idAlg)
 
-    algorithm = Algorithm.objects.filter(idAlg=idAlg).update(desc=desc,sample=sample)
+    if (clear == 'on'): algorithm.sample = None
+    elif ('sample' in request.FILES):   algorithm.sample = request.FILES['sample']
+
+    algorithm.desc = desc
+    algorithm.save()
+
     return HttpResponseRedirect(reverse('listAlgorithm'))
         
 def saveAlg(request):
@@ -198,6 +201,8 @@ def saveAlg(request):
     if (extension== 'c'):
         os.system("gcc " + Algorithm.objects.get(nameAlg=name).file.path + " -o algorithms/" + name + ' 2> log.txt' )
         newAlg.command = './algorithms/' + name
+
+    newAlg.command = './algorithms/' + name    
 
     newAlg.save()
 
@@ -445,9 +450,11 @@ def experiments(request):
         # print(outputFilePath)
         # teste = RunExperiment.delay(execution.algorithm.command)
 
-        if (execution.inputFile==None): inFile = 'no'
-
-        teste= RunExperiment.delay(alg.command, execution.id, inFile)
+        if (execution.inputFile==None): 
+            inFile = 'no'
+            teste= RunExperiment.delay(alg.command, execution.id, inFile)
+        else:
+            teste= RunExperiment.delay(alg.command, execution.id)
         print("resultado", teste)
 
         # teste = RunExperiment.delay(query, execution, outputFilePath)
