@@ -6,6 +6,8 @@
 
 {% block content %}
 
+{% if request.user.is_superuser %}
+
 <div class='row'>
 	<div class='padding'>
 		<form method="POST" action="{% url 'saveProfile' authUser %}" enctype="multipart/form-data">
@@ -24,4 +26,13 @@
 		</form>
 	</div>
 </div>
+
+{% else %}
+
+<div class='row'>
+Não possui acesso
+</div>
+
+{% endif %}
+
 {%endblock%}

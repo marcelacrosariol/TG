@@ -6,15 +6,16 @@
 {% block head_title%}{{title}}{%endblock%}
 {% block content %}
 
+{% if request.user.is_superuser %}
 <div class='row'>
 	<div class='col-lg-12 md-padding'>
 
   		<div class='sm-padding'>
-
-	      <form id="formRemove" method='POST' action='' enctype="multipart/form-data">
-	            {% csrf_token%}
+  			<a href="{% url 'addUser' %}"><button type="button" class="btn btn-success btn-sm">Cadastrar novo</button></a>
+  			<form id="formRemove" method='POST' action='{% url 'removeList' title %}' enctype="multipart/form-data">
+  				{% csrf_token%}
 	            <input type="submit" id="btExcluir" class="btn btn-default btn-sm" value="Excluir">
-	      </form>
+	        </form>
   		
    		</div>
 
@@ -34,7 +35,7 @@
 	      	<tbody id="tableSel">
 	    	{% for appUsuario in data %}
 		    	<tr>
-		    		<td><input type="checkbox" value="{{alg.idAlg}}"></td>
+		    		<td><input type="checkbox" value="{{appUsuario.usuario.id}}"></td>
 		          	<td>{{appUsuario.usuario.id}}</td>
 		          	<td><a href="{% url 'seeUser' appUsuario appUsuario.usuario %}">{{appUsuario.usuario.username}}</a></td>
 		          	<td>{{appUsuario.nickname}}</td>
@@ -91,4 +92,13 @@
 
 	</div>
 </div>
+
+{% else %}
+
+<div class='row'>
+Não possui acesso
+</div>
+
+{% endif %}
+
 {% endblock %}

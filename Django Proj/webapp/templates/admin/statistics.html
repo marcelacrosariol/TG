@@ -12,6 +12,8 @@
 
 {% block content %}
 
+{% if request.user.is_superuser %}
+
 <div class='row'>
 	<div class= 'col-lg-2 col-sm-12'>
 	      <form method="POST" action="" enctype="multipart/form-data">
@@ -25,5 +27,14 @@
 	      <canvas id="appChart"></canvas>
 	</div>
 </div>
+
+{% else %}
+
+<div class='row'>
+Não possui acesso
+</div>
+
+{% endif %}
+
 {% endblock %}
 

@@ -6,23 +6,20 @@ import webapp.regbackend as regbackend
 import experiment.views as views
 
 urlpatterns = [
-    # urls experiment
     url(r'^$', views.home, name='home'),
     url(r'^about/$', views.about, name='about'),
     url(r'^contact/$', views.contact, name='contact'),
-    url(r'^experiments/checkForm$',
-        views.checkForm , name='checkForm'),
+
+    # urls experiment
+    url(r'^experiments/checkForm$',views.checkForm , name='checkForm'),
     url(r'^experiments/$', views.experiments, name='exp'),
-    url(r'^experiments/downloadInputFile', views.downloadInputFile,
-        name='downloadInputFile'),
-    url(r'^experiments/downloadOutputFile', views.downloadOutputFile,
-        name='downloadOutputFile'),
-    url(r'^experiment/sample/(?P<path>[a-zA-Z0-9\u00C0-\u00FF]+)', views.downloadSample,
-        name='sampleDownload'),
+    url(r'^experiments/downloadInputFile', views.downloadInputFile, name='downloadInputFile'),
+    url(r'^experiments/downloadOutputFile$', views.downloadOutputFile, name='downloadOutputFile'),
+    url(r'^experiment/sample/(?P<path>[a-zA-Z0-9\u00C0-\u00FF]+)$', views.downloadSample,name='sampleDownload'),
     url(r'^experiments/result$', views.result, name='result'),
 
     # django admin
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^Django_admin/', include(admin.site.urls)),
 
     # urls register
     url(r'^accounts/register/', regbackend.MyRegistrationView.as_view(),
@@ -43,7 +40,7 @@ urlpatterns = [
     url(r'^admin/algorithms/(?P<idAlg>[a-zA-Z0-9\u00C0-\u00FF]+)/update$',views.updateAlg, name="updateAlgorithm"), #UPDATE
     url(r'^admin/algorithms/addAlgorithm/$', views.addAlg, name="addAlgorithm"), #CREATE
     url(r'^admin/algorithms/addAlgorithm/save',views.saveAlg, name="saveAlgorithm"), #CREATE
-    url(r'^admin/algorithms/statistics', views.appStatistics, name='appStatistics'),
+    url(r'^admin/algorithms/statistics/$', views.appStatistics, name='appStatistics'),
 
     # ADMIN users
     url(r'^admin/users/$', views.listUsers, name="listUsers"), #READ

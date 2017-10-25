@@ -444,7 +444,12 @@ def experiments(request):
             '/' + str(execution.id) + '/output'
         # print(outputFilePath)
         # teste = RunExperiment.delay(execution.algorithm.command)
-        teste = RunExperiment.delay(alg.command, execution.id)
+
+        if (execution.inputFile==None): inFile = 'no'
+
+        teste= RunExperiment.delay(alg.command, execution.id, inFile)
+        print("resultado", teste)
+
         # teste = RunExperiment.delay(query, execution, outputFilePath)
         #print teste.status
         # RunExperiment.apply_async(
@@ -464,8 +469,6 @@ def experiments(request):
     for item in Algorithm.objects.all():
       hlp[item.nameAlg] = [item.desc,str(item.sample)]
 
-    print (hlp)
-
     context = {
         'title': title,
         'form': form,
@@ -475,8 +478,8 @@ def experiments(request):
            
 @csrf_exempt
 def result(request):
-    if request.method == 'POST':
-        print ("POST")
+    # if request.method == 'POST':
+        # print ("POST")
     if (request.FILES):
             idExec = request.POST.get("id")
             tempo  = request.POST.get("time")

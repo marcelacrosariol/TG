@@ -7,6 +7,8 @@
 
 {% block content %}
 
+{% if request.user.is_superuser %}
+
 <div class='row'>
 	<div class='col-lg-12 md-padding'>
 
@@ -85,4 +87,13 @@
 
 	</div>
 </div>
+
+{% else %}
+
+<div class='row'>
+Não possui acesso
+</div>
+
+{% endif %}
+
 {% endblock %}
