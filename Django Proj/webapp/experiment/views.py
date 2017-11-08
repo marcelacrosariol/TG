@@ -23,6 +23,7 @@ from experiment.paginator import paginate
 
 from experiment.tasks import RunExperiment
 from random import randint
+from django.contrib import messages
 
 #################### HOME #################### 
 
@@ -168,9 +169,9 @@ def addAlg(request):
 def updateAlg(request,idAlg):
     desc = request.POST.get("desc")
     clear = request.POST.get("sample-clear")
-    
-    algorithm = Algorithm.objects.get(idAlg=idAlg)
 
+    algorithm = Algorithm.objects.get(idAlg=idAlg)
+    
     if (clear == 'on'): algorithm.sample = None
     elif ('sample' in request.FILES):   algorithm.sample = request.FILES['sample']
 
@@ -201,8 +202,6 @@ def saveAlg(request):
     if (extension== 'c'):
         os.system("gcc " + Algorithm.objects.get(nameAlg=name).file.path + " -o algorithms/" + name + ' 2> log.txt' )
         newAlg.command = './algorithms/' + name
-
-    newAlg.command = './algorithms/' + name    
 
     newAlg.save()
 
@@ -407,6 +406,34 @@ def checkForm(request):
         form_html = render_crispy_form(form, helper, RequestContext(request))
         return {'success': False, 'form_html': form_html}
 
+@csrf_protect
+def runExample(request):
+    if request.method == 'POST':
+        algorithm = request.POST.get('Algoritmo')
+        d_User = User.objects.get(username=request.user)
+        alg = Algorithm.objects.get(nameAlg=algorithm)
+        execution = Execution(
+            request_by=d_User.appuser,
+            algorithm=alg,
+            inputFile=alg.sample
+        )
+        execution.save()
+
+        teste= RunExperiment.delay(alg.command, execution.id, 'yes')
+
+        execution.save()
+
+        messages.warning(request, "Experimento criado - ID: " + str(execution.id))
+ 
+        return HttpResponseRedirect(reverse('home'))
+
+    form = ExecutionForm(request.POST or None)
+    context = {
+        'form': form
+    }
+
+    return render(request, "example.html", context)
+
 
 @csrf_protect
 def experiments(request):
@@ -433,29 +460,34 @@ def experiments(request):
             fileIn = request.FILES["Entrada"]
             execution.inputFile = fileIn
             execution.save()
-            queryInputFile = (
-                settings.MEDIA_ROOT +
-                execution.inputFile.name.replace('./', '/')
-            ).replace(' ', '\ ')
-            queryOutputFile = queryInputFile
-            queryOutputFile = queryOutputFile.replace('input', 'output')
-            # print "QUERY OUT : " + queryOutputFile
-            query = alg.command + ' ' + queryInputFile + '>' + queryOutputFile
+            # queryInputFile = (
+            #     settings.MEDIA_ROOT +
+            #     execution.inputFile.name.replace('./', '/')
+            # ).replace(' ', '\ ')
+            # queryOutputFile = queryInputFile
+            # queryOutputFile = queryOutputFile.replace('input', 'output')
+            # # print "QUERY OUT : " + queryOutputFile
+            # query = alg.command + ' ' + queryInputFile + '>' + queryOutputFile
             # print query
-        else:
-            query = execution.algorithm.command
-            outputFilePath = './users/user_' + \
-            str(execution.request_by.usuario.id) + \
-            '/' + str(execution.id) + '/output'
+        # else:
+        #     query = execution.algorithm.command
+        #     outputFilePath = './users/user_' + \
+        #     str(execution.request_by.usuario.id) + \
+        #     '/' + str(execution.id) + '/output'
         # print(outputFilePath)
         # teste = RunExperiment.delay(execution.algorithm.command)
+        elif (execType=='example'):
+            fileIn = alg.sample
 
-        if (execution.inputFile==None): 
-            inFile = 'no'
-            teste= RunExperiment.delay(alg.command, execution.id, inFile)
-        else:
-            teste= RunExperiment.delay(alg.command, execution.id)
-        print("resultado", teste)
+        if (execution.inputFile==None): inFile = 'none'
+        else: inFile = 'yes'
+
+        teste= RunExperiment.delay(alg.command, execution.id, inFile)
+        print('teste')
+        print(teste)
+        print(teste.status)
+
+        messages.warning(request, "Experimento criado - ID: " + str(execution.id))
 
         # teste = RunExperiment.delay(query, execution, outputFilePath)
         #print teste.status
@@ -488,26 +520,29 @@ def result(request):
     # if request.method == 'POST':
         # print ("POST")
     if (request.FILES):
-            idExec = request.POST.get("id")
-            tempo  = request.POST.get("time")
-            print("id: %s time: %s" %(idExec,tempo))
+        idExec = request.POST.get("id")
+        tempo  = request.POST.get("time")
+        print("id: %s time: %s" %(idExec,tempo))
 
-            execution = Execution.objects.get(id=idExec)
-            fileIn = request.FILES["file"]
-            execution.outputFile=fileIn
-            execution.status=3
-            execution.time = tempo
-            execution.save()
+        execution = Execution.objects.get(id=idExec)
+        fileIn = request.FILES["file"]
+        execution.outputFile=fileIn
+        execution.status=3
+        execution.time = tempo
+        execution.save()
 
-            appUser = execution.request_by
-            userEmail = appUser.usuario.email
+        appUser = execution.request_by
+        userEmail = appUser.usuario.email
 
-            if (appUser.notification == 'yes'): 
-                subject = 'Portal Friends - Experimento concluido com sucesso' 
-                from_email = settings.EMAIL_HOST_USER  
-                to_email = userEmail
-                message = "Olá " + appUser.nickname + " experiencia " + idExec + " foi concluida com sucesso"
-                send_mail(subject, message,from_email,[to_email], fail_silently=False)
+        if (appUser.notification == 'yes'): 
+            subject = 'Portal Friends - Experimento concluido com sucesso' 
+            from_email = settings.EMAIL_HOST_USER  
+            to_email = userEmail
+            message = "Olá " + appUser.nickname + " experiencia " + idExec + " foi concluida com sucesso"
+            send_mail(subject, message,from_email,[to_email], fail_silently=False)
+
+        return render(request, "home.html",{})
+        print ("aaa")
 
     return HttpResponse(1)
 
@@ -543,11 +578,17 @@ def removeList(request, model):
             ids = data.split(",")
             if(model == 'Algoritmos'):
                 Algorithm.objects.filter(idAlg__in=ids).delete()
+                messages.success(request,"Algoritmo deletado com sucesso")
                 return HttpResponseRedirect(reverse('listAlgorithm'))
             if(model == 'Home'):
-                Execution.objects.filter(id__in=ids).delete()
+                if(request.user.is_superuser):
+                    Execution.objects.filter(id__in=ids).delete()
+                else:
+                    Execution.objects.filter(id__in=ids).update(visible='no')
+                messages.success(request,"Experimento deletado com sucesso")
                 return HttpResponseRedirect(reverse('home'))
             if(model == 'Usuários'):
                 AppUser.objects.filter(usuario__in=ids).delete()
                 User.objects.filter(id__in=ids).delete()
+                messages.success(request,"Usuário deletado com sucesso")
                 return HttpResponseRedirect(reverse('listUsers'))

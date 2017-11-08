@@ -40,6 +40,10 @@ form{
 	color:#6db1ff;
 }
 
+#msg-box{
+	list-style-type: none;
+}
+
 .padding{
 	padding: 1% 25%
 }

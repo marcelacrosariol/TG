@@ -1,7 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
-
 
 class Algorithm(models.Model):
     idAlg = models.AutoField(primary_key=True)
@@ -9,7 +7,7 @@ class Algorithm(models.Model):
     desc = models.CharField(null=True, blank=False, max_length=500)
     command = models.CharField(null=False, blank=False, max_length=100)
     sample = models.FileField(upload_to="samples/", null=True, blank=True)
-    file = models.FileField(upload_to="algorithms/", null=False, blank=False)
+    file = models.FileField(upload_to="algorithms/", null=True, blank=True)
 
     def __str__(self):
         return self.nameAlg
@@ -46,6 +44,7 @@ class Execution(models.Model):
     inputFile = models.FileField(upload_to=user_directory_path_in, null=True)
     outputFile = models.FileField(upload_to=user_directory_path_out, null=True)
     time = models.FloatField(default=-1)
+    visible = models.CharField(choices=(("yes","Sim"),("no","Não")), default='yes',blank=False,null=False, max_length=3)
 
     def __int__(self):
         return self.request_by.id  

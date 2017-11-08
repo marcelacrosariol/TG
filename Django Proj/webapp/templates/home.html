@@ -8,10 +8,18 @@
 <div class="row">
   
   <div class = "col-lg-12 md-padding">
-   
-    
+
+    {% if messages %}
+    <ul id='msg-box'>
+      {% for message in messages %}
+      <li class="alert alert-{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
     <div class='col-md-6 sm-padding'>
       <a href="{% url 'exp' %}"><button type="button" class="btn btn-success btn-sm">Nova execução</button></a>
+      <a href="{% url 'example' %}"><button type="button" class="btn btn-default btn-sm">Exemplos</button></a>
       <form id="formRemove" method='POST' action='{% url 'removeList' title %}' enctype="multipart/form-data">
         {% csrf_token %}
         <input type="submit" id="btExcluir" class="btn btn-default btn-sm" value="Excluir">
@@ -35,9 +43,14 @@
           <tr>
             <th><input class="checkHeader" type="checkbox" value=""></th>
             <th>ID</th>
+            
+            {% if request.user.is_superuser %}
             {% if showOpt == 'Todas' %}
             <th>Usuário</th>
             {% endif %}
+            <th>Visivel</th>
+            {% endif %}
+            
             <th data-align="center">Data Requisição</th>
             <th data-align="center">Status</th>
             <th>Algoritmo</th>
@@ -48,12 +61,19 @@
         </thead>
         <tbody id="tableSel">
         {%for exp in data%}
+        {% if request.user.is_superuser or request.user.is_superuser == False and exp.visible == 'yes' %}
         <tr>
           <td><input type="checkbox" value="{{exp.id}}"></td>
           <td>{{exp.id}}</td>
+          
+
+          {% if request.user.is_superuser %}
           {% if showOpt == 'Todas' %}
           <td>{{exp.request_by}}</td>
           {% endif %}
+          <td>{{exp.visible}}</td>
+          {% endif %}
+          
           <td>{{exp.date_requisition}}</td>
           <td>
           {%if exp.status == 1%}
@@ -91,6 +111,7 @@
           {% endif %}
           </td>
         </tr>
+        {% endif %}
         {% endfor %}
         </tbody>
     </table>
@@ -140,8 +161,7 @@
   </div>
   
   {% else %}
-    <div id="colForm" class="col-sm-3 col-md-3"></div>
-    <div id="colForm" class="col-sm-6 col-md-6 text-center">
+    <div id="colForm" class="col-md-12 text-center">
       <hr>
       <p1>Você não possui experimentos</p1>
       <hr>
