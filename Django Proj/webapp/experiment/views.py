@@ -23,7 +23,6 @@ from experiment.paginator import paginate
 
 from experiment.tasks import RunExperiment
 from random import randint
-from django.contrib import messages
 
 #################### HOME #################### 
 
@@ -476,8 +475,6 @@ def experiments(request):
         #     '/' + str(execution.id) + '/output'
         # print(outputFilePath)
         # teste = RunExperiment.delay(execution.algorithm.command)
-        elif (execType=='example'):
-            fileIn = alg.sample
 
         if (execution.inputFile==None): inFile = 'none'
         else: inFile = 'yes'

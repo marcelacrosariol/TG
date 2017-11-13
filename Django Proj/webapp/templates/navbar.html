@@ -23,7 +23,7 @@
             {% if request.user.is_superuser %}
               <li><a href="{% url 'listAlgorithm' %}">Algoritmos </a></li>
               <li><a href="{% url 'listUsers' %}">Usuários </a></li>    
-              <li><a href="/admin">Administrar</a></li> 
+              <!-- <li><a href="/admin">Administrar</a></li>  -->
             {% else%}
             <li><a href="{% url 'about' %}">Sobre</a></li>
             <li><a href="{% url 'contact' %}">Contato</a></li>

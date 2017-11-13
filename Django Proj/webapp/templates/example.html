@@ -8,7 +8,7 @@
 {% block content %}
 {% if request.user.is_authenticated %}
 <div id='row-form' class="row">
-    <div id="colForm" class="col-sm-6 padding">
+    <div id="colForm" class="col-sm-12 padding">
 		<form id='form_exec' method='POST' action='.' enctype="multipart/form-data">
 			{% csrf_token %}
 			<div id="formContent"> 
