@@ -9,24 +9,37 @@
 
 {% if request.user.is_superuser %}
 
-<div class='row'>
-	<div class="padding">
-		<form method="POST" action="{% url 'updateAlgorithm' idAlg %}" enctype="multipart/form-data">
-			{% csrf_token %}	
-			<fieldset disabled="disabled"> {{form.nameAlg | as_crispy_field}} </fieldset>
-			{{form.desc | as_crispy_field}}
-			{{form.sample | as_crispy_field}}
-			{{form.file | as_crispy_field}}
+<div class='container content-body'>
+	<div class="content-main">
 
-			<input type="submit" class="btn btn-default btn-sm" value="Salvar">
-		</form>
+		<p class="content-title">
+		Editar algoritmo
+		</p>
+		<div class="padding">
+			<form method="POST" action="{% url 'updateAlgorithm' idAlg %}" enctype="multipart/form-data">
+				{% csrf_token %}	
+				<fieldset disabled="disabled"> {{form.nameAlg | as_crispy_field}} </fieldset>
+				{{form.desc | as_crispy_field}}
+				{{form.sample | as_crispy_field}}
+				{{form.file | as_crispy_field}}
+
+				<input type="submit" class="btn btn-default btn-sm" value="Salvar">
+			</form>
+		</div>
 	</div>
 </div>
 
 {% else %}
 
-<div class='row'>
-Não possui acesso
+<div class='container'>
+	<div class="content-main">
+		<p class=content-title>
+			Acesso negado!
+		</p>
+	    <p class="content-text">
+	      Você não possui autorização para acessar essa página.
+	    </p>
+    </div>
 </div>
 
 {% endif %}

@@ -14,8 +14,8 @@
 
 {% if request.user.is_superuser %}
 
-<div class='row'>
-	<div class= 'col-lg-2 col-sm-12'>
+<div class='container content-body'>
+	<div class='side-menu'>
 	      <form method="POST" action="" enctype="multipart/form-data">
 	            {% csrf_token %}
 	            {{form|crispy}} 
@@ -23,15 +23,22 @@
 	      </form>
 	</div>
 
-	<div class='col-lg-10 col-sm-12'>
+	<div class='main-content'>
 	      <canvas id="appChart"></canvas>
 	</div>
 </div>
 
 {% else %}
 
-<div class='row'>
-Não possui acesso
+<div class='container'>
+	<div class="content-main">
+		<p class=content-title>
+			Acesso negado!
+		</p>
+	    <p class="content-text">
+	      Você não possui autorização para acessar essa página.
+	    </p>
+    </div>
 </div>
 
 {% endif %}

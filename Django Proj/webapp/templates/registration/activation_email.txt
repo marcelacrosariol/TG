@@ -1,13 +1,13 @@
 {% load i18n %}
-{% trans "Activate account at" %} {{ site.name }}:
+Ativação de conta em {{ site.name }}:
 
-Hello there!
+Olá,
 
-Click the link below to activate your account.
+Clique no link abaixo, ou digite o endereço no navegador, para ativar sua conta:
 
 http://{{ site.domain }}{% url 'registration_activate' activation_key %}
 
 
-{% blocktrans %}The above link is valid for {{ expiration_days }} days.{% endblocktrans %}
+Este link é válido por {{ expiration_days }} dias.
 
--Team CFE
+-Observatório Virtual

@@ -3,9 +3,21 @@
 {% block title%}Sobre{%endblock%}
 
 {% block jumbotron%}
-	<div class="jumbotron">
-        <h2>O que é?</h2>
-        <p>Esta aplicação foi desenvovlida para permitir a execução remota de quaisquer algoritmos cadastrados pelo administrador da aplicação.</p> 
 
+<div class="container content-body ">
+	<div class="side-menu">
+		<p>
+	      <a href="{% url 'register_custom' %}" role="button">Registre-se &raquo;</a>
+	    </p>
 	</div>
+
+	<div class="content-main">
+		<p class="content-title">
+		O que é?
+		</p>
+	    
+	    <p class="content-text">Esta aplicação foi desenvolvida para permitir a execução remota de quaisquer algoritmos cadastrados pelo administrador da aplicação.
+	    </p>
+    </div>
+</div>
 {%endblock%} 

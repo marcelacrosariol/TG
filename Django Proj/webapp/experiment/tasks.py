@@ -16,7 +16,7 @@ def RunExperiment(execution, ide, inputFile='yes'):
     os.system("mkdir executions/" + str(ide))
 
     if(inputFile == 'yes'):
-      os.system("wget http://127.0.0.1:8000/experiments/downloadInputFile?id=" +
+      os.system("wget http://200.201.194.150/experiments/downloadInputFile?id=" +
               str(ide) + " -O ./executions/" + str(ide) + "/input")
       start = time.time()
       os.system(execution + " executions/" + str(ide) + "/input > executions/" + str(ide) + "/output")
@@ -26,13 +26,15 @@ def RunExperiment(execution, ide, inputFile='yes'):
     dur = time.time() - start
     
     print (dur)
-    files={'file': str("/executions/"+str(ide) + "/output")}
+    
+    files={'file': str("/executions/"+str(ide)+"/output")}
     path = str("executions/" + str(ide)+"/output")
     print (path)
+    
     files = {'file': open(path, 'rb')}
     data = {'id':str(ide),'time':dur}
-    #   r = requests.post('http://10.1.4.28:8000/about/')
-    r = requests.post('http://127.0.0.1:8000/experiments/result', files=files,data=data)
+    
+    r = requests.post('http://200.201.194.150/experiments/result', files=files,data=data)
     print (r.status_code, r.reason)
     
     return r.status_code

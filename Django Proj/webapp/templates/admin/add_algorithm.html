@@ -8,8 +8,30 @@
 
 {% if request.user.is_superuser %}
 
-<div class="row">
-  <div class = "col-sm-12 center-block text-left padding">
+<div class="container content-body">
+  <div class="side-menu">
+    <div class="subject-box">
+      <p class="subject-text"> MENU </p>
+    </div>
+
+    <div class="item-box bottom-box">
+      <a href="{% url 'listAlgorithm' %}" class="item-text">Algoritmos</a>
+    </div>
+  
+    <div class="secondary-box item-box secondary-title">
+    Algoritmos
+    </div>
+    <div class="secondary-box item-box">
+      <a href="{% url 'appStatistics' %}" class="item-text">Estatísticas</a>
+    </div>
+  </div>
+
+  <div class="content-main">
+  	<p class="content-title">
+  	Cadastro de algoritmo
+  	</p>
+
+  	<div class="padding">
     <form method="POST" action="{% url 'saveAlgorithm' %}" enctype="multipart/form-data">
       {% csrf_token %}
       <div id="formContent"> 
@@ -17,14 +39,21 @@
       </div>    
       <input type="submit" class="btn btn-default btn-sm" value="cadastrar">
     </form>
-
+    </div>   
   </div>
 </div>
 
 {% else %}
 
-<div class='row'>
-Não possui acesso
+<div class='container'>
+	<div class="content-main">
+		<p class=content-title>
+			Acesso negado!
+		</p>
+	    <p class="content-text">
+	      Você não possui autorização para acessar essa página.
+	    </p>
+    </div>
 </div>
 
 {% endif %}

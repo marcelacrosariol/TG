@@ -6,13 +6,30 @@
 
 {% block jumbotron%}
   <!-- Main component for a primary marketing message or call to action -->
-      <div class="jumbotron text-justify">
-        <h1>Observatório Virtual</h1>
-        <p>Esta aplicação tem como objetivo possibilitar a execução remota de algoritmos cadastrados pelo administrador e foi originalmente desenvolvida por Otávio Migliavacca Madalosso.</p>
-        <p>A continuidade desta aplicação está sendo desenvolvida por Marcela Crosariol como trabalho de graduação em Análise e Desenvolvimento de Sistemas na Faculdade de Tecnologia de São José dos Campos </p>
-        <p>Para fins de testes, o algoritmo selecionado para demonstração, é uma implementação de complexidade n*log(n) do algoritmo Friends of Friends para a classificação de objetos astronômicos.</p>
-        <p>
-          <a class="btn btn-lg btn-primary" href="{% url 'register_custom' %}" role="button">Registre-se &raquo;</a>
-        </p>
-      </div>      
+
+<div class="container">
+	<div class="side-menu">
+		<p>
+	      <a href="{% url 'register_custom' %}" role="button">Registre-se &raquo;</a>
+	    </p>
+	</div>
+
+	<div class="content-main">
+		<p class="content-title">
+		Observatório Virtual 
+		</p>
+	    
+	    <p class="content-text">Esta aplicação tem como objetivo possibilitar a execução remota de algoritmos cadastrados pelo administrador e foi originalmente desenvolvida por Otávio Migliavacca Madalosso.
+	    </p>
+
+	    <p class="content-text">
+	    A continuidade desta aplicação está sendo desenvolvida por Marcela Crosariol como trabalho de graduação em Análise e Desenvolvimento de Sistemas na Faculdade de Tecnologia de São José dos Campos 
+	    </p>
+	    
+	    <p class="content-text">
+	    Para fins de testes, o algoritmo selecionado para demonstração, é uma implementação de complexidade n*log(n) do algoritmo Friends of Friends para a classificação de objetos astronômicos.
+	    </p>
+    </div>
+</div>
+      
 {%endblock%}

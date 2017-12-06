@@ -1,21 +1,286 @@
-
-.glyphicon-refresh-animate {
-    -animation: spin .7s infinite linear;
-    -webkit-animation: spin2 .7s infinite linear;
+/*contact text area*/
+body{
+	margin: 0 auto;
 }
 
-@-webkit-keyframes spin2 {
-    from { -webkit-transform: rotate(0deg);}
-    to { -webkit-transform: rotate(360deg);}
+textarea{
+	resize:none;
+	width:100%;
 }
 
-@keyframes spin {
-    from { transform: scale(1) rotate(0deg);}
-    to { transform: scale(1) rotate(360deg);}
+th{
+	text-align:center;
 }
-form{
-	display: inline;
+
+/*
+------------------------------------------------------------------------------------------------
+HEADER
+------------------------------------------------------------------------------------------------
+*/
+
+#header{
+	background:  #F0F2F1; /*For browsers that do not support gradients */
+ 	background: -webkit-linear-gradient(#F0F2F1,#ECEDF1);  /*For Safari 5.1 to 6.0 */
+	background: -o-linear-gradient(#F0F2F1,#ECEDF1);/* For Opera 11.1 to 12.0 */
+  	background: -moz-linear-gradient(#F0F2F1,#ECEDF1); /* For Firefox 3.6 to 15 */
+  	background: linear-gradient(#F0F2F1,#ECEDF1);  /*Standard syntax */
+  	border: 0 0 10px 0;
 }
+
+#header a{
+	font-family: 'Open Sans', sans-serif;
+	font-weight: bold;
+	color: #2C66CE; 
+}
+
+#header a:hover{
+	color: #2C66CE;
+	text-decoration: none;
+}
+
+/*
+------------------------------------------------------------------------------------------------
+NAVIGATION
+------------------------------------------------------------------------------------------------
+*/
+
+#custom-nav{
+   	background-color: #cfd0d2;
+	font-size: 12px;
+}
+
+#custom-nav a{
+	font-family: 'Open Sans', sans-serif;
+	color: #2C66CE; 
+}
+
+#header a:hover, #custom-nav a:hover{
+	color: #2C66CE;
+	text-decoration: none;
+}
+
+#custom-nav{
+	background-color: #DADCD8;
+}
+
+/*
+------------------------------------------------------------------------------------------------
+BODY 
+------------------------------------------------------------------------------------------------
+*/
+
+.content-body{
+	min-height: 410px
+}
+
+.content-title, .content-text{
+	font-family: Arial;
+	color: #172938;
+	text-align: justify;
+}
+
+.content-title{
+	font-size: 34px;
+	font-weight: bold;
+	line-height: 37px
+}
+
+
+.content-text{
+	line-height: 21px;
+}
+
+/*
+------------------------------------------------------------------------------------------------
+SIDE MENU
+------------------------------------------------------------------------------------------------
+*/
+
+.subject-text{
+	font-family: 'Open Sans', sans-serif;
+	font-weight: bold;
+	font-size: 12px;
+	color: #2C66CE;
+}
+
+.subject-box{
+	height: 42px;
+	padding: 2px;
+	margin-top: 45px;
+	background-color: #EAEBEE;
+	border-top: 4px solid #1659BF;
+}
+
+.bottom-box{
+	height: 30px;
+	padding: 2px;
+	border-bottom: 2px solid #1659BF;
+}
+
+.item-text{
+	font-family: 'Open Sans', sans-serif;
+	font-size: 14px;
+	color: #172938;
+}
+
+.item-box{
+	height: 30px;
+	padding: 2px;
+	border-bottom: 1px solid #DEDCD7;
+}
+
+.secondary-box{
+	height: 30px;
+	background-color: #EAEBEE;
+}
+
+.secondary-title{
+	font-weight: bold;
+}
+
+.btn-custom{
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+
+}
+/*
+------------------------------------------------------------------------------------------------
+FOOTER
+------------------------------------------------------------------------------------------------
+*/
+
+#footer{
+	padding: 0px 40px 100px;
+	background-color: #D5D5D5;
+	color: #2C66CE;
+
+}
+
+#footer a{
+	font-family: 'Open Sans', sans-serif;
+	font-size: 13px;
+	color: #2C66CE;
+}
+
+#footer a:hover{
+	color: #2C66CE;
+	text-decoration: none;
+
+}
+
+#footer ul{
+	list-style: none;
+	margin: 0px 0;
+	padding: 10px 5px;
+
+}
+
+.footer-box{
+	display: inline-grid;
+	margin:42px 30px 0px;
+	text-align: top;
+	text-align: left;
+	border-left: 1px dotted black;
+}
+
+.footer-title{
+	font-family: 'Open Sans', sans-serif;
+	font-weight: bold;
+	font-size: 18px;
+	margin-bottom: 18px;
+}
+
+@media screen and (max-width: 768px) {
+	.container{
+		width: 300px;
+		margin: 0 auto;
+	}
+  	#header{
+  		font-size: 15px;
+		padding: 15px 28px;
+	}
+
+	#custom-nav {
+		text-align: center;
+		font-size: 15px;
+	}
+	#custom-nav ul li{
+		margin: 2px 0;
+	}
+	.content-main{
+	}
+	#logo{
+		font-size: 20px;
+	}
+	.side-menu{
+		width: 300px;
+		margin: 0;
+	}
+}
+
+@media screen and (min-width: 768px) (max-width: 1024px) {
+	.container{
+		width: 750px;
+		margin: 0 auto;
+		padding: none;
+
+	}
+	.content-main{
+		width: 520px;
+		float:right;
+	}
+	.side-menu{
+		width: 200px;
+		margin: 0 30px 0 0;
+		float: left;
+	}
+	#menu{
+		max-height: 10px;
+	}
+/*    .navbar-right {
+        margin-top: -55px;
+    }*/
+}
+
+@media screen and (min-width: 1024px) {
+	.container{
+		width: 960px;
+		margin: 0 auto;
+		padding: none;
+	}
+	#header{
+		width: 960;
+		height: 112px;
+		padding: 30px 48px 20px;
+	}
+	#logo{
+		font-size: 40px;
+	}
+	.content-main{
+		width: 750px;
+		float: right;
+	}
+	.side-menu{
+		width: 150px;
+		margin: 0 30px 0 0;
+		float: left;
+	}
+	#menu{
+		max-height: 10px;
+	}
+}
+
+
+/*
+------------------------------------------------------------------------------------------------
+EXPERIMENT
+------------------------------------------------------------------------------------------------
+*/
+
 
 #hlpAlg{
 	display: none;
@@ -45,7 +310,7 @@ form{
 }
 
 .padding{
-	padding: 1% 25%
+	padding: 15px 50px;
 }
 
 .md-padding{

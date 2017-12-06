@@ -18,16 +18,20 @@
   </head>
 
   <body >
-    {% include 'navbar.html' %}
 
     <div class="container">
+        {% include 'navbar.html' %}
+
+    </div> <!-- /container -->
+
         {% block jumbotron %}
         {%endblock%}
 
         {% block content %}
         {%endblock%}
 
-    </div> <!-- /container -->
+
+    
 
     {% include 'footer.html' %}
     {% include "javascript.html" %}

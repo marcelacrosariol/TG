@@ -1,6 +1,53 @@
-<footer class="footer">
-  <div class="container">
-    <!-- <p class="text-muted text-center">Criado por Otávio Migliavacca Madalosso</p>
-    <p class="text-muted text-center">2015</p> -->
-  </div>
-</footer>
+<div class="container">
+	<div id="footer">
+
+		{% if request.user.is_superuser == False %}
+		<div class="footer-box">
+			<ul>
+				<li class="footer-title"> Informações </li>
+				<li><a href=""> Sobre </a></li>
+				<li><a href=""> Contato </a></li>
+			</ul>
+		</div>
+		{% endif %}
+
+		{% if request.user.is_authenticated == False %}
+		<div class="footer-box">
+			<ul>
+				<li class="footer-title">Acesso</li>
+				<li><a href=""> Cadastrar </a></li>
+				<li><a href=""> Entrar</a></li>
+			</ul>
+		</div>
+		{% endif %}
+
+		{% if request.user.is_authenticated %}
+		<div class="footer-box">
+			<ul>
+				<li class="footer-title">Experimentos</li>
+				<li><a href=""> Nova Execução </a></li>
+				<li><a href=""> Exemplos </a></li>
+			</ul>
+		</div>
+		{% endif %}
+
+		{% if request.user.is_superuser %}
+		<div class="footer-box">
+			<ul>
+				<li class="footer-title">Usuários</li>
+				<li><a href=""> Listar todos</a></li>
+				<li><a href=""> Cadastrar novo</a></li>
+			</ul>
+		</div>
+		<div class="footer-box">
+			<ul>
+				<li class="footer-title">Algoritmos</li>
+				<li><a href=""> Listar todos</a></li>
+				<li><a href=""> Cadastrar novo</a></li>
+				<li><a href=""> Estatísticas </a></li>
+			</ul>
+		</div>
+		{% endif %}
+
+	</div>
+</div>

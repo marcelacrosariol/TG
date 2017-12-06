@@ -6,46 +6,74 @@
 {% block title%}Experimentos{%endblock%}
 
 {% block content %}
-	{% if request.user.is_authenticated %}
-		<div id='row-form' class="row">
-			<div id="colForm" class="col-sm-3 col-md-3">
-			</div>
-		    <div id="colForm" class="col-sm-6 col-md-6">
-				<form id='form_exec' method='POST' action='.' enctype="multipart/form-data">
-				{% csrf_token %}
-					<div id="formContent"> 
-						{{form.Algoritmo | as_crispy_field}}
-						<a id="showDesc" class='btn btn-link'>Sobre os algoritmos</a>
-						
-						{{form.Entrada | as_crispy_field}} 
-					</div>				 
-					<input id='execute' class='btn btn-primary' type="submit" value="Executar"> 
-				</form>
-				<div id="hlpAlg">
-					<table>
-  						<tr>
-    						<th>Algoritmo</th>
-    						<th>Descrição</th>
-    						<th>Exemplo de entrada</th>
-  						</tr>
-  						{% for key, value in help.items %}
-						<tr>
-							<td>{{key}}</td> 
-							{% for item in value %}
-								{% if 'sample' in item %}
-    							<td><a href="{% url 'sampleDownload' key%}"> Downloaaaa </a></td>
-    							{% else %}
-    							<td>{{item}}</td>
-    							{% endif %}
-    						{% endfor %}
-  						</tr>
-  						{% endfor %} 
-					</table>
-				</div>
-		  	</div>
-		  	<div id="colForm" class="col-sm-3 col-md-3"></div>
+{% if request.user.is_authenticated %}
+<div class="container content-body">
+
+	<div class="side-menu">
+	    <div class="subject-box">
+	      <p class="subject-text"> MENU </p>
+	    </div>
+
+	    <div class="item-box">
+	      <a href="{% url 'home' %}" class="item-text">Execuções</a>
+	    </div>
+	    <div class="bottom-box">
+	      <a href="{% url 'example' %}" class="item-text">Exemplos</a>
+	    </div>
+	</div>
+
+
+    <div class="content-main">
+
+		<p class=content-title>
+		Criar experimento
+		</p>
+
+		<form id='form_exec' method='POST' action='.' enctype="multipart/form-data">
+		{% csrf_token %}
+			<div id="formContent"> 
+				{{form.Algoritmo | as_crispy_field}}
+				<a id="showDesc" class='btn btn-link'>Sobre os algoritmos</a>
+				
+				{{form.Entrada | as_crispy_field}} 
+			</div>				 
+			<input id='execute' class='btn btn-primary' type="submit" value="Executar"> 
+		</form>
+		<div id="hlpAlg">
+			<table>
+					<tr>
+					<th>Algoritmo</th>
+					<th>Descrição</th>
+					<th>Exemplo de entrada</th>
+					</tr>
+					{% for key, value in help.items %}
+				<tr>
+					<td>{{key}}</td> 
+					{% for item in value %}
+						{% if 'sample' in item %}
+						<td><a href="{% url 'sampleDownload' key%}"> Downloaaaa </a></td>
+						{% else %}
+						<td>{{item}}</td>
+						{% endif %}
+					{% endfor %}
+					</tr>
+					{% endfor %} 
+			</table>
 		</div>
-	{%else%}
-		Faça o login para prosseguir
-	{%endif%}
+  	</div>
+  	
+</div>
+{%else%}
+<div class='container'>
+	<div class="content-main">
+		<p class=content-title>
+			Acesso negado!
+		</p>
+	    <p class="content-text">
+	      Você não possui autorização para acessar essa página.
+	    </p>
+    </div>
+</div>
+
+{%endif%}
 {%endblock%}

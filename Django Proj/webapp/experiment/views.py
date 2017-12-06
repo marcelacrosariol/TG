@@ -110,7 +110,7 @@ def downloadInputFile(request):
 def downloadOutputFile(request):
     expId = request.GET.get('id')
     execution = Execution.objects.get(pk=expId)
-    if (execution.request_by.usuario.id == request.user.id):
+    if (execution.request_by.usuario.id == request.user.id or request.user.is_superuser):
         # print (execution.outputFile.url)
         # print ("Autorizado")
         response = HttpResponse(
@@ -180,15 +180,22 @@ def updateAlg(request,idAlg):
     return HttpResponseRedirect(reverse('listAlgorithm'))
         
 def saveAlg(request):
+
+    #Get data from form
     name = request.POST.get('nameAlg')
     desc= request.POST.get('desc')
     algFile = request.FILES['file']
-            
+           
+    #Get extension of the uploaded file
+    extension = algFile.name.split(".")[-1].lower()
+    
+    #Default path of uploaded algorithms
+    path = settings.MEDIA_ROOT + "/algorithms/"
+  
     newAlg = Algorithm()
-
     newAlg.nameAlg = name
     newAlg.desc = desc
-    newAlg.command = './'
+    newAlg.command = path + "/" +algFile.name
     newAlg.file=algFile
    
     if ('sample' in request.FILES): 
@@ -196,13 +203,15 @@ def saveAlg(request):
         newAlg.sample=sample
         
     newAlg.save()
-    extension = algFile.name.split(".")[-1].lower()
     
+    #If the file needs to be compiled
     if (extension== 'c'):
-        os.system("gcc " + Algorithm.objects.get(nameAlg=name).file.path + " -o algorithms/" + name + ' 2> log.txt' )
-        newAlg.command = './algorithms/' + name
+        os.system("gcc " + newAlg.file.path + " -o " + path + name)
+        newAlg.command = path  + name
 
     newAlg.save()
+
+    messages.success(request, "Algoritmo salvo com successo")
 
     return HttpResponseRedirect(reverse('listAlgorithm'))
 
@@ -319,6 +328,8 @@ def saveUser(request):
         usuario=user)
     appUser.save()
 
+    messages.success(request, "Usuário criado com sucesso")
+
     return HttpResponseRedirect(reverse('listUsers'))
 
 
@@ -372,9 +383,13 @@ def saveProfile(request, uname):
         appUser.update(nickname=nickname)
         authUser.update(is_staff=staff,is_active=active)
 
+        messages.success(request, "Perfil salvo com sucesso")
+
         return HttpResponseRedirect(reverse('listUsers'))
 
+    messages.success(request, "Perfil salvo com sucesso")
     return HttpResponseRedirect(reverse('home'))
+
     # return HttpResponseRedirect(reverse('userProfile', kwargs={'username':uname}))
 
 
@@ -440,14 +455,15 @@ def experiments(request):
         form = ExecutionForm(request.POST, request.FILES or None)
         if not form.is_valid():
             title = "Experiments %s" % (request.user)
-            # form_html = render_crispy_form(form)
             context = {
                 'form': form,
                 'title': title,
             }
             return render(request, "experiments.html", context)
+        
         algorithm = request.POST.get('Algoritmo')
         d_User = User.objects.get(username=request.user)
+        
         alg = Algorithm.objects.get(nameAlg=algorithm)
         execution = Execution(
             request_by=d_User.appuser,
@@ -459,45 +475,19 @@ def experiments(request):
             fileIn = request.FILES["Entrada"]
             execution.inputFile = fileIn
             execution.save()
-            # queryInputFile = (
-            #     settings.MEDIA_ROOT +
-            #     execution.inputFile.name.replace('./', '/')
-            # ).replace(' ', '\ ')
-            # queryOutputFile = queryInputFile
-            # queryOutputFile = queryOutputFile.replace('input', 'output')
-            # # print "QUERY OUT : " + queryOutputFile
-            # query = alg.command + ' ' + queryInputFile + '>' + queryOutputFile
-            # print query
-        # else:
-        #     query = execution.algorithm.command
-        #     outputFilePath = './users/user_' + \
-        #     str(execution.request_by.usuario.id) + \
-        #     '/' + str(execution.id) + '/output'
-        # print(outputFilePath)
-        # teste = RunExperiment.delay(execution.algorithm.command)
+        elif (execType=='example'):
+            fileIn = alg.sample
 
         if (execution.inputFile==None): inFile = 'none'
         else: inFile = 'yes'
 
         teste= RunExperiment.delay(alg.command, execution.id, inFile)
-        print('teste')
-        print(teste)
-        print(teste.status)
-
         messages.warning(request, "Experimento criado - ID: " + str(execution.id))
 
-        # teste = RunExperiment.delay(query, execution, outputFilePath)
-        #print teste.status
-        # RunExperiment.apply_async(
-        #     args=[query, execution, outputFilePath], kwargs={}, countdown=60)
-        # RunExperiment.delay(query, execution, outputFilePath)
-        # os.system(query)
-        # execution.outputFile = queryOutputFile
         execution.save()
         title = "Experiments %s" % (request.user)
-        # cont = {"title": title, "form": form}
+    
         return HttpResponseRedirect(reverse('home'))
-        # return render(request, "experiments.html", cont)
     form = ExecutionForm(request.POST or None)
     title = "Experiments %s" % (request.user)
 
@@ -514,33 +504,29 @@ def experiments(request):
            
 @csrf_exempt
 def result(request):
-    # if request.method == 'POST':
+    if request.method == 'POST':
         # print ("POST")
-    if (request.FILES):
-        idExec = request.POST.get("id")
-        tempo  = request.POST.get("time")
-        print("id: %s time: %s" %(idExec,tempo))
+        if (request.FILES):
+            idExec = request.POST.get("id")
+            tempo  = request.POST.get("time")
+            print("id: %s time: %s" %(idExec,tempo))
 
-        execution = Execution.objects.get(id=idExec)
-        fileIn = request.FILES["file"]
-        execution.outputFile=fileIn
-        execution.status=3
-        execution.time = tempo
-        execution.save()
+            execution = Execution.objects.get(id=idExec)
+            fileIn = request.FILES["file"]
+            execution.outputFile=fileIn
+            execution.status=3
+            execution.time = tempo
+            execution.save()
 
-        appUser = execution.request_by
-        userEmail = appUser.usuario.email
+            appUser = execution.request_by
+            userEmail = appUser.usuario.email
 
-        if (appUser.notification == 'yes'): 
-            subject = 'Portal Friends - Experimento concluido com sucesso' 
-            from_email = settings.EMAIL_HOST_USER  
-            to_email = userEmail
-            message = "Olá " + appUser.nickname + " experiencia " + idExec + " foi concluida com sucesso"
-            send_mail(subject, message,from_email,[to_email], fail_silently=False)
-
-        return render(request, "home.html",{})
-        print ("aaa")
-
+            if (appUser.notification == 'yes'): 
+                subject = 'Portal Friends - Experimento concluido com sucesso' 
+                from_email = settings.EMAIL_HOST_USER  
+                to_email = userEmail
+                message = "Olá " + appUser.nickname + " experiencia " + idExec + " foi concluida com sucesso"
+                send_mail(subject, message,from_email,[to_email], fail_silently=False)
     return HttpResponse(1)
 
 

@@ -15,7 +15,7 @@ urlpatterns = [
     url(r'^experiments/$', views.experiments, name='exp'),
     url(r'^experiments/downloadInputFile', views.downloadInputFile, name='downloadInputFile'),
     url(r'^experiments/downloadOutputFile$', views.downloadOutputFile, name='downloadOutputFile'),
-    url(r'^experiment/sample/(?P<alg>[a-zA-Z0-9\u00C0-\u00FF_-]+)$', views.downloadSample, name='sampleDownload'),
+    url(r'^experiment/sample/(?P<alg>[a-zA-Z0-9\u00C0-\u00FF_-]+)$', views.downloadSample,name='sampleDownload'),
     url(r'^experiments/result$', views.result, name='result'),
     url(r'^experimemt/example/$', views.runExample, name='example'),
 

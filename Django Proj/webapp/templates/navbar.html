@@ -1,59 +1,61 @@
-<!-- Static navbar -->
-    <nav class="navbar navbar-default navbar-static-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
+<div id="header">
+  <a id="logo" href="{% url 'home' %}"> Observatório <wbr> Virtual</a>
+</div>
 
-            <a class="navbar-brand" href="{% url 'home' %}">
-            {% if request.user.is_authenticated %}
-            Execuções
-            {% else %}
-            Início
-            {% endif %}
-            </a>
-            
+<nav id="custom-nav" class="navbar navbar-default">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu" aria-expanded="false" aria-controls="navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        {% if request.user.is_authenticated %}
+          <li><a href="{% url 'home' %}">Experimentos</a></li>
+        {%endif%}
+        {% if request.user.is_superuser %}
+          <li><a href="{% url 'listAlgorithm' %}">Algoritmos </a></li>
+          <li><a href="{% url 'listUsers' %}">Usuários </a></li>    
+          <!-- <li><a href="/admin">Administrar</a></li>  -->
+        {% else%}
+        <li><a href="{% url 'about' %}">Sobre</a></li>
+        <li><a href="{% url 'contact' %}">Contato</a></li>
+
+        {%endif%}
+      </ul>
+
+      
+      <ul class="nav navbar-nav navbar-right">
+      {% if request.user.is_authenticated %}
+        <li><a href="{% url 'userProfile' user %}">{{user}}</a></li>
+        <li><a href="{% url 'auth_logout' %}">Sair</a></li>
+      {% else %}          
+        <li><a href="{% url 'auth_password_reset' %}">Esqueceu a senha?</a></li>
+        <li><a href="{% url 'registration_register' %}">Registrar</a></li>
+      {% endif %}
+      </ul>
+      
+
+      {% if not request.user.is_authenticated and not "/accounts/login" in request.get_full_path %}
+      <form class="form-inline navbar-form navbar-right" method="POST" action="{% url 'auth_login' %}">{%csrf_token%}
+        
+        <div class="form-group">
+          <input type='text' class='form-control input-sm' name='username' placeholder='Usuário'>
         </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            {% if request.user.is_superuser %}
-              <li><a href="{% url 'listAlgorithm' %}">Algoritmos </a></li>
-              <li><a href="{% url 'listUsers' %}">Usuários </a></li>    
-              <!-- <li><a href="/admin">Administrar</a></li>  -->
-            {% else%}
-            <li><a href="{% url 'about' %}">Sobre</a></li>
-            <li><a href="{% url 'contact' %}">Contato</a></li>
-            {%endif%}
 
-          </ul>
-
-          <ul class="nav navbar-nav navbar-right">
-            {% if request.user.is_authenticated %}
-            <li><a href="{% url 'userProfile' user %}">{{user}}</a></li>
-            <li><a href="{% url 'auth_logout' %}">Sair</a></li>
-            {%else%}
-            <li class="active"><a href="{% url 'registration_register' %}">Registrar</a></li>
-            {%endif%}
-          </ul>
-
-          {% if not request.user.is_authenticated and not "/accounts/login" in request.get_full_path %}
-          <form class="navbar-form navbar-right" method="POST" action="{% url 'auth_login' %}">{%csrf_token%}
-            <div class="form-group">
-              <input type='text' class='form-control' name='username' placeholder='Username'>
-            </div>
-            <div class="form-group">
-              <input type='password' class='form-control' name='password' placeholder='Password'>
-
-              <button type="submit" class="btn btn-default">Entrar</button>
-              <a href="{% url 'auth_password_reset' %}" class="btn btn-link">Esqueceu a senha?</a>
-            </div>
-
-          </form>
-          {%endif%}
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
+        <div class="form-group">
+          <input type='password' class='form-control input-sm' name='password' placeholder='Senha'>
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-sm btn-default">Entrar</button>
+        </div>
+        </form>
+        
+      {%endif%}
+    </div><!--/.nav-collapse -->
+</nav>
+<!-- 
+   -->

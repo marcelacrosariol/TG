@@ -7,19 +7,48 @@
 
 {% block content %}
 {% if request.user.is_authenticated %}
-<div id='row-form' class="row">
-    <div id="colForm" class="col-sm-12 padding">
-		<form id='form_exec' method='POST' action='.' enctype="multipart/form-data">
-			{% csrf_token %}
-			<div id="formContent"> 
-				{{form.Algoritmo | as_crispy_field}}
-			</div>				 
-			<input id='execute' class='btn btn-primary' type="submit" value="Executar"> 
-		</form>
-  	</div>
+<div class="container content-body">
 
+	<div class="side-menu">
+	    <div class="subject-box">
+	      	<p class="subject-text"> MENU </p>
+	    </div>
+	    <div class="item-box">
+	    	<a href="{% url 'home' %}" class="item-text">Execuções</a>
+	    </div>
+	    <div class="bottom-box">
+	    	<a href="{% url 'exp' %}" class="item-text">Nova Execução</a>
+	    </div>
+	</div>
+
+	<div class="content-main">
+
+		<p class=content-title>
+		Executar exemplo
+		</p>
+
+		<div class="padding">
+			<form id='form_exec' method='POST' action='.' enctype="multipart/form-data">
+				{% csrf_token %}
+				<div id="formContent"> 
+					{{form.Algoritmo | as_crispy_field}}
+				</div>				 
+				<input id='execute' class='btn btn-primary' type="submit" value="Executar"> 
+			</form>
+		</div>
+   	</div>
 </div>
+
 {%else%}
-	Faça o login para prosseguir
+<div class='container'>
+	<div class="content-main">
+		<p class=content-title>
+			Acesso negado!
+		</p>
+	    <p class="content-text">
+	      Você não possui autorização para acessar essa página.
+	    </p>
+    </div>
+</div>
 {%endif%}
 {%endblock%}

@@ -6,11 +6,17 @@
 
 {%block content%}
 
-<div class="row">
-  <div class = "col-sm-12 text-center padding">
-    <table class="table table-striped table-bordered">
+<div class="container">
+  <div class = "content-main text-center padding">
+
+    <p class="content-title">
+    Editar Perfil
+    </p>
+
+    <div class="table-responsive">
+    <table class="table table-striped table-bordered table-condensed">
         <thead>
-          <th colspan="2">Meu Perfil &nbsp </th>
+          <th colspan="2">{{user.appuser.nickname}}</th>
         </thead>
         <tbody>
         <tr>
@@ -31,7 +37,7 @@
 
           <tr>
             <td>Instituição</td>
-            <td>{{form.company}}</td>
+            <td>{{user.appuser.company}}</td>
           </tr>
           <tr>
             <td>Email</td>
@@ -52,6 +58,8 @@
 
         </tbody>
     </table>
+    </div>
+
   </div>
 </div>
 {% endblock %}

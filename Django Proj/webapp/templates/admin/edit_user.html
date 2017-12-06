@@ -8,22 +8,28 @@
 
 {% if request.user.is_superuser %}
 
-<div class='row'>
-	<div class='padding'>
-		<form method="POST" action="{% url 'saveProfile' authUser %}" enctype="multipart/form-data">
-		{% csrf_token%}
-		<h3>{{authUser}}</h3>
-		{{appUserForm.nickname | as_crispy_field}}
-		{{passwdForm | crispy }}
-		{{userForm.email | as_crispy_field}}
-		{{appUserForm.choice | as_crispy_field}}
-		{{appUserForm.company | as_crispy_field}}
-		{{userForm.is_active | as_crispy_field}}
-		{{userForm.is_staff | as_crispy_field}}
-		{{appUserForm.resultsPerPage | as_crispy_field}}
+<div class='container content-body'>
 
-	    <input type="submit" id="btExcluir" class="btn btn-default btn-sm" value="Salvar">
-		</form>
+	<div class="content-main">
+		<p class="content-title">
+		Editar usuário: {{authUser}}
+		</p>
+
+		<div class='padding'>
+			<form method="POST" action="{% url 'saveProfile' authUser %}" enctype="multipart/form-data">
+			{% csrf_token%}
+			{{appUserForm.nickname | as_crispy_field}}
+			{{passwdForm | crispy }}
+			{{userForm.email | as_crispy_field}}
+			{{appUserForm.choice | as_crispy_field}}
+			{{appUserForm.company | as_crispy_field}}
+			{{userForm.is_active | as_crispy_field}}
+			{{userForm.is_staff | as_crispy_field}}
+			{{appUserForm.resultsPerPage | as_crispy_field}}
+
+		    <input type="submit" id="btExcluir" class="btn btn-default btn-sm" value="Salvar">
+			</form>
+		</div>
 	</div>
 </div>
 

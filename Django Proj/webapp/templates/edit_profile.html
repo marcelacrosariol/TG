@@ -8,7 +8,15 @@
 
 <div class="row">
   <div class = "col-sm-12 col-md-12 text-center">
-
+    
+    {% if messages %}
+    <ul id='msg-box'>
+    {% for message in messages %}
+    <li class="alert alert-{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+    
+    </ul>
+    {% endif %}
     <form method="POST" action="{% url 'saveProfile' request.user %}" enctype="multipart/form-data">
       {% csrf_token %}
       <div id="formContent"> 

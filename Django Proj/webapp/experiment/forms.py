@@ -16,12 +16,27 @@ class PasswdChangeForm(SetPasswordForm):
 
 class AppUserForm(RegistrationFormUniqueEmail):
     username = forms.CharField(required=True, label='Usuário', max_length=20, help_text="Máximo 20 caracteres")
-    password1 = forms.CharField(label="Senha", widget=forms.PasswordInput)
+    password1 = forms.CharField(required=True,label="Senha", widget=forms.PasswordInput)
     password2 = forms.CharField(label="Confirmação da senha", widget=forms.PasswordInput, help_text="Digite a mesma senha do campo anterior")
-    nickname = forms.CharField(required=False, label='Nome', max_length=30)
-    company = forms.CharField(required=False, label='Empresa / Instituição', max_length=30)
+    nickname = forms.CharField(required=True, label='Nome', max_length=30)
+    company = forms.CharField(required=True, label='Empresa / Instituição', max_length=30)
     resultsPerPage =forms.IntegerField(required=False, initial=10, label="Resultados por página")
     choice = forms.ChoiceField(choices=[('yes','Sim'),('no','Não')], initial='yes', widget=forms.Select, required=False,label="Notificação da conclusão de execuções por email?")
+
+class UserForm(forms.ModelForm):
+  class Meta:
+    model = User
+    fields = ['email','password','user_permissions','is_staff', 'is_active', 'user_permissions']
+    labels = {
+            'email': 'Email',
+            'password': 'Senha',
+            'user_permissions': 'Permissões',
+            'is_staff': 'Administrador', 
+            'is_active': 'Conta Ativa', 
+                }
+    help_text = {
+            'is_active': 'Define se a conta está ativa',
+    }
 
 class ExecutionForm(forms.Form):
     Algoritmo = forms.ModelChoiceField(queryset=Algorithm.objects.all(),
@@ -54,20 +69,3 @@ class AlgorithmForm(forms.ModelForm):
             'file': 'Arquivo' 
                 }
 
-# class RegistrationForm(RegistrationForm):
-
-
-class UserForm(forms.ModelForm):
-  class Meta:
-    model = User
-    fields = ['email','password','user_permissions','is_staff', 'is_active', 'user_permissions']
-    labels = {
-            'email': 'Email',
-            'password': 'Senha',
-            'user_permissions': 'Permissões',
-            'is_staff': 'Administrador', 
-            'is_active': 'Conta Ativa', 
-                }
-    help_text = {
-            'is_active': 'Define se a conta está ativa',
-    }

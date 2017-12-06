@@ -7,24 +7,45 @@
 {% block content %}
 
 {% if request.user.is_superuser %}
-<div class='row'>
-	<div class='padding'>
+<div class='container content-body'>
+
+	<div class="side-menu">
+		<div class="subject-box">
+			<p class="subject-text"> MENU </p>
+	    </div>
+	    <div class="bottom-box">
+	    	<a href="{% url 'listUsers' %}" class="item-text">Usuários</a>
+	    </div>
+
+	</div>
+
+	<div class='content-main'>
+		<p class="content-title">
+		Cadastro de Usuário
+		</p>
+		<div class="padding">
 		<form method="POST" action="{% url 'saveUser' %}" enctype="multipart/form-data">
 		{% csrf_token%}
-		<h3>Novo usuário</h3>
 		{{appForm | crispy}}
 		{{uForm.is_active | as_crispy_field }}
 		{{tForm}}
 	    <input type="submit" id="btExcluir" class="btn btn-default btn-sm" value="Salvar">
 		</form>
-
+		</div>
 	</div>
 </div>
 
 {% else %}
 
-<div class='row'>
-Não possui acesso
+<div class='container'>
+	<div class="content-main">
+		<p class=content-title>
+			Acesso negado!
+		</p>
+	    <p class="content-text">
+	      Você não possui autorização para acessar essa página.
+	    </p>
+    </div>
 </div>
 
 {% endif %}
