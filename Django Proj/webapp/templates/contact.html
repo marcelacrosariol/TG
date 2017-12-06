@@ -6,14 +6,28 @@
 
 {%block content%}
 <div class="container content-body">
-	<p class="content-title">
-		Contato
-	</p>
-	<div class=padding>
-	<form method="POST" action=".">{% csrf_token %}
-		{{form|crispy}}
-		<input class='btn btn-primary center-block' type="submit" value="Enviar">
-	</form>
+	<div class="side-menu">
+		<div class="subject-box">
+	      <p class="subject-text"> MENU </p>
+	    </div>
+	    <div class="item-box">
+	      <a href="{% url 'home' %}" class="item-text">Página Inicial</a>
+	    </div>
+	    <div class="bottom-box">
+	      <a href="{% url 'register_custom' %}" class="item-text">Registrar</a>
+	    </div>
+	</div>
+
+	<div class="content-main">
+		<p class="content-title">
+			Contato
+		</p>
+		<div class=padding>
+		<form method="POST" action=".">{% csrf_token %}
+			{{form|crispy}}
+			<input class='btn btn-primary center-block' type="submit" value="Enviar">
+		</form>
+		</div>
 	</div>
 </div>
 
